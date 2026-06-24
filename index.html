@@ -1,460 +1,757 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>Pump Log Sheet - MED Portal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#0b3d6e">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Pump Log Sheet &middot; MED Portal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:wght@500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap"
     rel="stylesheet">
   <style>
     :root {
-      --bg-main: #030712;
-      /* Pitch black space canvas */
-      --bg-card: #0b1329;
-      /* High-end glassmorphic navy container */
-      --bg-input: #111c40;
-      /* deep high-contrast input chambers */
-      --text-main: #f8fafc;
-      /* Crisp, glowing silver-white */
-      --text-muted: #94a3b8;
-      /* Smooth tech-slate text */
+      /* Surfaces */
+      --page-bg: #eef1f5;
+      --surface: #ffffff;
+      --surface-alt: #f5f7fa;
+      --surface-sunken: #eef2f6;
 
-      /* Executive Premium Color Scheme */
-      --brand-primary: #6366f1;
-      /* Electric Indigo */
-      --brand-gradient: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-      --accent-cyan: #06b6d4;
-      /* Neon Cyan telemetry feedback */
-      --accent-emerald: #10b981;
-      /* Active Sync Pulse Emerald */
-      --accent-amber: #f59e0b;
-      /* High-visibility warm Amber */
+      /* Ink */
+      --ink-900: #102a43;
+      --ink-700: #33526e;
+      --ink-500: #5f7991;
+      --ink-300: #9fb3c8;
 
-      --border-color: #1e293b;
-      /* Clean, fine-grain vector boundaries */
-      --border-hover: #334155;
-      --radius-lg: 14px;
-      --radius-md: 10px;
+      /* Lines */
+      --line: #d9e2ec;
+      --line-strong: #bcccdc;
+
+      /* Brand: official navy + maroon, restrained gold accent */
+      --navy: #0b3d6e;
+      --navy-dark: #082c50;
+      --navy-darker: #061d35;
+      --maroon: #8a1f2b;
+      --maroon-dark: #6e1721;
+      --gold: #9c7a2e;
+      --teal: #0f6e6e;
+      --amber-deep: #8a5a00;
+      --plum: #5b3b8a;
+
+      /* Status */
+      --success: #1c7c54;
+      --success-bg: #e6f4ec;
+      --warning: #a15c00;
+      --warning-bg: #fbf0de;
+      --danger: #b3261e;
+      --danger-bg: #fbeaea;
+
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --shadow-sm: 0 1px 2px rgba(16, 42, 67, 0.07);
+      --shadow-md: 0 6px 16px rgba(16, 42, 67, 0.08);
+      --shadow-lg: 0 16px 32px rgba(16, 42, 67, 0.14);
+
+      --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-display: 'Lora', Georgia, serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
     }
 
     body {
-      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-      background-color: var(--bg-main);
-      color: var(--text-main);
+      font-family: var(--font-body);
+      background-color: var(--page-bg);
+      color: var(--ink-900);
       margin: 0;
       padding: 0;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       -webkit-font-smoothing: antialiased;
+      line-height: 1.5;
     }
 
-    /* Premium Top Navigation Deck */
+    :focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+
+    /* Seal / signature mark */
+    .seal {
+      color: currentColor;
+      flex-shrink: 0;
+    }
+
+    .seal--sm {
+      width: 30px;
+      height: 30px;
+    }
+
+    .seal--lg {
+      width: 52px;
+      height: 52px;
+    }
+
+    /* Top letterhead bar */
     .top-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 16px 32px;
-      background: rgba(3, 7, 18, 0.85);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border-color);
+      gap: 12px;
+      padding: 12px 20px;
+      padding-top: max(12px, env(safe-area-inset-top));
+      background: linear-gradient(120deg, var(--navy) 0%, var(--navy-dark) 55%, var(--teal) 150%);
+      border-bottom: 3px solid var(--gold);
       position: sticky;
       top: 0;
       z-index: 100;
-      box-sizing: border-box;
+      box-shadow: var(--shadow-md);
     }
 
     .top-bar-brand {
-      font-weight: 800;
-      font-size: 0.95rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      background: linear-gradient(90deg, var(--brand-primary), var(--accent-cyan));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
       display: flex;
       align-items: center;
       gap: 10px;
+      color: #fff;
+      min-width: 0;
     }
 
-    .top-bar-brand::before {
-      content: '';
-      width: 8px;
-      height: 8px;
-      background: var(--accent-cyan);
-      border-radius: 50%;
-      box-shadow: 0 0 12px var(--accent-cyan);
+    .top-bar-brand .seal {
+      color: #d8c98f;
+    }
+
+    .top-bar-brand .brand-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.25;
+      min-width: 0;
+    }
+
+    .top-bar-brand .brand-name {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.02rem;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+    }
+
+    .top-bar-brand .brand-sub {
+      font-size: 0.68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #b9cce3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .nav-actions {
       display: flex;
-      gap: 12px;
+      gap: 8px;
+      flex-shrink: 0;
     }
 
     .nav-actions button {
-      background: #0f172a;
-      border: 1px solid var(--border-color);
-      padding: 10px 18px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      padding: 9px 14px;
       cursor: pointer;
-      font-size: 0.8rem;
-      color: var(--text-main);
+      font-size: 0.78rem;
+      color: #fff;
       border-radius: var(--radius-md);
-      font-weight: 700;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      font-weight: 600;
+      font-family: var(--font-body);
+      transition: background 0.15s ease;
+      min-height: 38px;
     }
 
     .nav-actions button:hover {
-      background: #1e293b;
-      border-color: var(--border-hover);
-      transform: translateY(-1px);
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    .nav-actions button:active {
+      background: rgba(255, 255, 255, 0.26);
     }
 
     #download-btn {
-      background: var(--brand-gradient);
-      border-color: transparent;
-      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
+      background: var(--gold);
+      border-color: var(--gold);
+      color: var(--navy-darker);
     }
 
     #download-btn:hover {
-      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
+      background: #ad8a3d;
     }
 
-    /* Master Grid Layout container */
+    /* Layout */
     .container {
-      max-width: 1000px;
+      max-width: 880px;
       width: 100%;
       margin: 0 auto;
-      padding: 40px 24px;
+      padding: 24px 20px 48px;
       box-sizing: border-box;
+      flex: 1;
     }
 
-    /* Institutional Clean Header */
+    /* Letterhead-style page header */
     .academic-header {
-      background: linear-gradient(180deg, #0f172a 0%, #070d1e 100%);
-      border: 1px solid var(--border-color);
-      border-top: 4px solid var(--brand-primary);
-      padding: 28px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      padding: 22px 24px 22px 28px;
       border-radius: var(--radius-lg);
-      margin-bottom: 36px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .academic-header::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: linear-gradient(180deg, var(--navy), var(--teal), var(--maroon), var(--gold));
+    }
+
+    .academic-header .seal {
+      color: var(--navy);
+      margin-top: 2px;
     }
 
     .affiliation {
-      font-size: 0.72rem;
-      margin: 0 0 10px 0;
-      color: var(--accent-cyan);
+      font-size: 0.7rem;
+      margin: 0 0 6px 0;
+      color: var(--maroon);
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      font-weight: 800;
+      font-weight: 700;
     }
 
     .academic-header h1 {
-      font-size: 1.75rem;
-      margin: 0 0 8px 0;
-      font-weight: 800;
-      color: #ffffff;
-      letter-spacing: -0.02em;
-    }
-
-    .academic-header h2 {
-      font-size: 1.1rem;
-      margin: 0;
-      font-weight: 500;
-      color: var(--text-muted);
-    }
-
-    /* High-End Enterprise Sign-In Panel */
-    .login-wrapper {
-      max-width: 420px;
-      margin: 80px auto 0 auto;
-      padding: 0 20px;
-      box-sizing: border-box;
-    }
-
-    .login-card {
-      padding: 40px;
-      background: var(--bg-card);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: var(--radius-lg);
-      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
-    }
-
-    .login-card h3 {
-      font-weight: 800;
-      margin: 0 0 8px 0;
+      font-family: var(--font-display);
       font-size: 1.4rem;
-      color: #fff;
+      margin: 0 0 4px 0;
+      font-weight: 700;
+      color: var(--navy-darker);
       letter-spacing: -0.01em;
     }
 
+    .academic-header h2 {
+      font-size: 0.95rem;
+      margin: 0;
+      font-weight: 500;
+      color: var(--ink-500);
+    }
+
+    /* Login */
+    .login-wrapper {
+      max-width: 400px;
+      margin: 48px auto 0 auto;
+      padding: 0 20px;
+      box-sizing: border-box;
+      width: 100%;
+    }
+
+    .login-card {
+      padding: 32px 28px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--navy), var(--teal), var(--maroon), var(--gold));
+    }
+
+    .login-card .seal {
+      color: var(--navy);
+      margin: 0 auto 14px;
+    }
+
+    .login-card h3 {
+      font-family: var(--font-display);
+      font-weight: 700;
+      margin: 0 0 6px 0;
+      font-size: 1.25rem;
+      color: var(--navy-darker);
+    }
+
     .login-card p {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin: 0 0 32px 0;
+      font-size: 0.84rem;
+      color: var(--ink-500);
+      margin: 0 0 26px 0;
       line-height: 1.6;
+    }
+
+    .login-card .form-group {
+      text-align: left;
     }
 
     .login-btn {
       width: 100%;
-      padding: 14px;
+      padding: 13px;
       font-size: 0.9rem;
       cursor: pointer;
-      background: var(--brand-gradient);
+      background: var(--navy);
       color: #fff;
       border: none;
       border-radius: var(--radius-md);
       font-weight: 700;
-      transition: all 0.2s ease;
-      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+      font-family: var(--font-body);
+      transition: background 0.15s ease;
+      min-height: 46px;
     }
 
     .login-btn:hover {
-      opacity: 0.95;
-      transform: translateY(-1px);
+      background: var(--navy-dark);
     }
 
-    /* Form Shell Elements */
+    .login-btn:active {
+      background: var(--navy-darker);
+    }
+
+    #login-error {
+      color: var(--danger);
+      text-align: left;
+      margin-top: 14px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      min-height: 1.2em;
+    }
+
+    /* Form shell */
     .form-section {
-      border: 1px solid var(--border-color);
+      border: 1px solid var(--line);
       border-radius: var(--radius-lg);
-      margin: 28px 0;
-      padding: 28px;
-      background: var(--bg-card);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      margin: 18px 0;
+      padding: 22px;
+      background: var(--surface);
+      box-shadow: var(--shadow-sm);
     }
 
     .form-section legend {
-      font-weight: 800;
-      font-size: 0.75rem;
-      padding: 6px 16px;
-      color: #fff;
-      background: #1e293b;
-      border: 1px solid var(--border-color);
-      border-radius: 30px;
+      font-weight: 700;
+      font-size: 0.72rem;
+      padding: 0 0 10px 0;
+      margin-bottom: 6px;
+      color: var(--navy-darker);
+      border-bottom: 1px solid var(--line);
+      width: 100%;
       text-transform: uppercase;
-      letter-spacing: .08em;
+      letter-spacing: 0.07em;
+      display: block;
     }
 
     .form-group-inline {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 24px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
     }
 
     .form-group {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
     }
 
     .form-group label {
-      font-size: .8rem;
-      font-weight: 700;
-      color: var(--text-muted);
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--ink-700);
     }
 
     .form-group input {
       width: 100%;
-      padding: 14px 16px;
-      border: 2px solid var(--border-color);
+      padding: 13px 14px;
+      border: 1.5px solid var(--line-strong);
       border-radius: var(--radius-md);
       font-family: inherit;
-      font-size: 0.95rem;
-      color: var(--text-main);
-      background: var(--bg-input);
+      font-size: 1rem;
+      color: var(--ink-900);
+      background: var(--surface-alt);
       box-sizing: border-box;
-      transition: all 0.15s ease;
+      transition: border-color 0.15s ease, background 0.15s ease;
+      min-height: 46px;
     }
 
     .form-group input:focus {
       outline: none;
-      border-color: var(--brand-primary);
-      background: #14204a;
-      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+      border-color: var(--navy);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(11, 61, 110, 0.14);
     }
 
-    /* Telemetry Pump Control Interface Blocks */
+    /* Pump rows */
+    #pump-inputs {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
     .pump-box {
-      margin-bottom: 16px;
-      display: grid;
-      grid-template-columns: 200px 1fr;
-      align-items: center;
-      padding: 20px 24px;
-      background: #0f1833;
-      border: 1px solid var(--border-color);
-      border-left: 4px solid var(--accent-cyan);
+      padding: 16px 18px;
+      background: var(--surface-alt);
+      border: 1px solid var(--line);
+      border-left: 3px solid var(--line-strong);
       border-radius: var(--radius-md);
-      transition: border-color 0.2s ease;
     }
 
-    .pump-box:nth-child(even) {
-      border-left-color: var(--brand-primary);
+    #pump-inputs .pump-box:nth-child(1) {
+      border-left-color: var(--navy);
     }
 
-    .pump-box:hover {
-      border-color: #2e3d5c;
+    #pump-inputs .pump-box:nth-child(2) {
+      border-left-color: var(--maroon);
     }
 
-    .pump-box h4 {
+    #pump-inputs .pump-box:nth-child(3) {
+      border-left-color: var(--teal);
+    }
+
+    #pump-inputs .pump-box:nth-child(4) {
+      border-left-color: var(--amber-deep);
+    }
+
+    #pump-inputs .pump-box:nth-child(5) {
+      border-left-color: var(--plum);
+    }
+
+    #pump-inputs .pump-box:nth-child(1) .pump-badge {
+      background: var(--navy);
+    }
+
+    #pump-inputs .pump-box:nth-child(2) .pump-badge {
+      background: var(--maroon);
+    }
+
+    #pump-inputs .pump-box:nth-child(3) .pump-badge {
+      background: var(--teal);
+    }
+
+    #pump-inputs .pump-box:nth-child(4) .pump-badge {
+      background: var(--amber-deep);
+    }
+
+    #pump-inputs .pump-box:nth-child(5) .pump-badge {
+      background: var(--plum);
+    }
+
+    .pump-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .pump-badge {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--navy);
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .pump-label h4 {
       margin: 0;
-      font-size: 1rem;
-      font-weight: 800;
-      color: #ffffff;
-      letter-spacing: -0.01em;
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--ink-900);
     }
 
     .time-row {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
+      gap: 14px;
     }
 
     input[type="date"],
     input[type="time"] {
-      color-scheme: dark;
-      font-family: 'JetBrains Mono', monospace;
+      color-scheme: light;
+      font-family: var(--font-mono);
       font-weight: 600;
     }
 
     .action-row {
-      margin-top: 24px;
+      margin-top: 20px;
       display: flex;
       justify-content: flex-end;
     }
 
     #save-status {
-      font-size: .78rem;
+      font-size: 0.78rem;
       font-weight: 700;
-      padding: 8px 18px;
-      background: #0f172a;
-      border: 1px solid var(--border-color);
+      padding: 9px 16px;
+      background: var(--surface-alt);
+      border: 1px solid var(--line);
       border-radius: 30px;
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      color: var(--text-muted);
+      color: var(--ink-500);
     }
 
-    /* Modern Station Grid Options Deck */
-    .station-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
-      gap: 24px;
-      margin-top: 24px;
+    #save-status .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+      flex-shrink: 0;
+    }
+
+    /* Station directory */
+    #list-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 4px;
     }
 
     .station-item {
-      padding: 28px;
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
       cursor: pointer;
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-      background: linear-gradient(145deg, #0b1329 0%, #0e1938 100%);
-      position: relative;
-    }
-
-    .station-item::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      border-radius: var(--radius-lg);
-      box-shadow: 0 12px 32px rgba(99, 102, 241, 0.12);
-      opacity: 0;
-      transition: opacity 0.25s;
+      background: var(--surface);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      min-height: 44px;
     }
 
     .station-item:hover {
-      transform: translateY(-2px);
-      border-color: #3b4f7c;
+      border-color: var(--navy);
+      box-shadow: var(--shadow-sm);
     }
 
-    .station-item:hover::before {
-      opacity: 1;
+    .station-item:active {
+      background: var(--surface-alt);
     }
 
-    .station-item h3 {
-      margin: 0 0 10px 0;
-      font-size: 1.15rem;
-      font-weight: 800;
-      color: #ffffff;
-      letter-spacing: -0.01em;
+    .station-index {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 1rem;
+      color: var(--line-strong);
+      min-width: 26px;
     }
 
-    .station-item p {
+    .station-main h3 {
+      margin: 0 0 3px 0;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--ink-900);
+    }
+
+    .station-main p {
       margin: 0;
-      color: var(--text-muted);
-      font-size: .88rem;
-      font-weight: 500;
+      color: var(--ink-500);
+      font-size: 0.8rem;
     }
 
-    /* Clean Professional Table Matrix */
-    .recent-section {
-      margin-top: 54px;
+    .station-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
-    .recent-section h3 {
-      font-size: 0.85rem;
-      font-weight: 800;
-      margin-bottom: 24px;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--accent-cyan);
-    }
-
-    .table-responsive-container {
-      width: 100%;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-    }
-
-    .academic-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: .88rem;
-    }
-
-    .academic-table th,
-    .academic-table td {
-      padding: 16px 20px;
-      text-align: left;
+    .count-pill {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 4px 9px;
+      border-radius: 30px;
+      background: var(--success-bg);
+      color: var(--success);
       white-space: nowrap;
     }
 
-    .academic-table th {
-      background: #090f21;
-      border-bottom: 2px solid var(--border-color);
+    .count-pill--full {
+      background: var(--warning-bg);
+      color: var(--warning);
+    }
+
+    .chevron {
+      color: var(--ink-300);
+      font-size: 1.3rem;
+      line-height: 1;
+    }
+
+    .empty-note {
+      text-align: center;
+      font-style: italic;
+      color: var(--ink-500);
+      padding: 32px 0;
+      font-size: 0.88rem;
+    }
+
+    /* Recent log — card based, mobile-friendly */
+    .recent-section {
+      margin-top: 40px;
+    }
+
+    .recent-section h3 {
+      font-size: 0.78rem;
       font-weight: 700;
-      color: var(--text-main);
+      margin-bottom: 16px;
       text-transform: uppercase;
-      font-size: .75rem;
-      letter-spacing: .08em;
+      letter-spacing: 0.08em;
+      color: var(--maroon);
     }
 
-    .academic-table td {
-      border-bottom: 1px solid var(--border-color);
-      background: var(--bg-card);
+    #recent-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 12px;
     }
 
-    .academic-table tr:nth-child(even) td {
-      background: #0a1126;
+    .log-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: var(--surface);
+      padding: 14px 16px;
+      box-shadow: var(--shadow-sm);
     }
 
-    .academic-table tr:last-child td {
-      border-bottom: none;
+    .log-card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--line);
     }
 
-    /* System Loader Animations */
+    .log-date {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 0.8rem;
+      color: #fff;
+      background: var(--navy);
+      padding: 3px 9px;
+      border-radius: 5px;
+    }
+
+    .log-operator {
+      font-size: 0.78rem;
+      color: var(--ink-500);
+      text-align: right;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .log-pumps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
+      gap: 8px;
+    }
+
+    .log-pump-cell {
+      background: var(--surface-alt);
+      border-left: 3px solid var(--line-strong);
+      border-radius: 6px;
+      padding: 7px 9px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .log-pumps-grid .log-pump-cell:nth-child(1) {
+      border-left-color: var(--navy);
+    }
+
+    .log-pumps-grid .log-pump-cell:nth-child(2) {
+      border-left-color: var(--maroon);
+    }
+
+    .log-pumps-grid .log-pump-cell:nth-child(3) {
+      border-left-color: var(--teal);
+    }
+
+    .log-pumps-grid .log-pump-cell:nth-child(4) {
+      border-left-color: var(--amber-deep);
+    }
+
+    .log-pumps-grid .log-pump-cell:nth-child(5) {
+      border-left-color: var(--plum);
+    }
+
+    .log-pumps-grid .log-pump-cell:nth-child(1) .lp-label {
+      color: var(--navy);
+    }
+
+    .log-pumps-grid .log-pump-cell:nth-child(2) .lp-label {
+      color: var(--maroon);
+    }
+
+    .log-pumps-grid .log-pump-cell:nth-child(3) .lp-label {
+      color: var(--teal);
+    }
+
+    .log-pumps-grid .log-pump-cell:nth-child(4) .lp-label {
+      color: var(--amber-deep);
+    }
+
+    .log-pumps-grid .log-pump-cell:nth-child(5) .lp-label {
+      color: var(--plum);
+    }
+
+    .lp-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--ink-500);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .lp-time {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--ink-900);
+    }
+
+    .lp-time.is-empty {
+      color: var(--ink-300);
+    }
+
+    /* Loading */
     .loading-container {
       display: flex;
       flex-direction: column;
@@ -462,16 +759,17 @@
       justify-content: center;
       height: 100vh;
       gap: 16px;
-      color: var(--text-muted);
+      color: var(--ink-500);
+      background: var(--page-bg);
     }
 
     .spinner {
-      width: 36px;
-      height: 36px;
-      border: 3px solid var(--border-color);
-      border-top-color: var(--brand-primary);
+      width: 34px;
+      height: 34px;
+      border: 3px solid var(--line);
+      border-top-color: var(--navy);
       border-radius: 50%;
-      animation: spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      animation: spin 0.8s linear infinite;
     }
 
     @keyframes spin {
@@ -480,56 +778,105 @@
       }
     }
 
-    /* Fluid Mobile Responsive Engineering Rules */
-    @media(max-width:768px) {
+    @media (prefers-reduced-motion: reduce) {
+
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+      }
+    }
+
+    /* Mobile rules */
+    @media (max-width: 768px) {
       .top-bar {
-        padding: 14px 20px;
+        padding: 10px 14px;
+        padding-top: max(10px, env(safe-area-inset-top));
       }
 
-      .top-bar-brand {
-        font-size: 0.85rem;
+      .top-bar-brand .brand-name {
+        font-size: 0.92rem;
       }
 
       .nav-actions button {
-        padding: 8px 14px;
-        font-size: 0.78rem;
+        padding: 8px 11px;
+        font-size: 0.74rem;
       }
 
       .container {
-        padding: 24px 16px;
+        padding: 18px 14px 32px;
       }
 
       .academic-header {
-        padding: 20px;
-        margin-bottom: 24px;
+        padding: 16px;
+        gap: 12px;
+      }
+
+      .academic-header .seal--lg {
+        width: 38px;
+        height: 38px;
       }
 
       .academic-header h1 {
-        font-size: 1.4rem;
+        font-size: 1.15rem;
       }
 
       .academic-header h2 {
-        font-size: 1rem;
+        font-size: 0.86rem;
       }
 
       .form-section {
-        padding: 18px;
-        margin: 20px 0;
-      }
-
-      .pump-box {
-        grid-template-columns: 1fr;
-        gap: 14px;
         padding: 16px;
+        margin: 14px 0;
       }
 
-      .time-row {
+      .form-group-inline {
         gap: 14px;
       }
 
-      .station-grid {
-        grid-template-columns: 1fr;
-        gap: 16px;
+      .station-item {
+        grid-template-columns: auto 1fr auto;
+        padding: 14px;
+        gap: 12px;
+      }
+
+      .log-card-head {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+      }
+
+      .log-operator {
+        text-align: left;
+        max-width: 100%;
+      }
+
+      #view-form {
+        padding-bottom: 78px;
+      }
+
+      .action-row {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: 0;
+        justify-content: center;
+        background: var(--navy-dark);
+        padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+        box-shadow: 0 -6px 18px rgba(6, 29, 53, 0.25);
+        z-index: 80;
+      }
+
+      #save-status {
+        width: 100%;
+        max-width: 360px;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.22);
+        color: #e8eef5;
       }
     }
   </style>
@@ -539,14 +886,26 @@
 
   <div id="loading" class="loading-container">
     <div class="spinner"></div>
-    <p style="font-size: 0.85rem; font-weight: 600; letter-spacing: 0.02em;">Initializing Operational Matrix...</p>
+    <p style="font-size: 0.85rem; font-weight: 600;">Loading portal&hellip;</p>
   </div>
 
   <div class="top-bar" id="nav" style="display:none">
-    <div class="top-bar-brand">MED Portal</div>
+    <div class="top-bar-brand">
+      <svg class="seal seal--sm" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="32" cy="32" r="29" stroke="currentColor" stroke-width="2"></circle>
+        <circle cx="32" cy="32" r="23" stroke="currentColor" stroke-width="1" stroke-dasharray="2 3"></circle>
+        <path d="M32 15c-5.5 6.5-9.5 11.5-9.5 17.5a9.5 9.5 0 0019 0c0-6-4-11-9.5-17.5z" stroke="currentColor"
+          stroke-width="2" stroke-linejoin="round"></path>
+        <path d="M21 41l3.6-4.5 3.6 3.6 3.8-5.4 3.6 4.5 3.6-3.6" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+      <div class="brand-text">
+        <span class="brand-name">MED Portal</span>
+      </div>
+    </div>
     <div class="nav-actions">
       <button id="back-btn" onclick="goBack()" style="display:none">&larr; Stations</button>
-      <button id="download-btn" onclick="downloadExcel()" style="display:none">Export Excel</button>
+      <button id="download-btn" onclick="downloadExcel()" style="display:none">Export</button>
       <button id="logout-btn" onclick="logout()" style="display:none">Sign Out</button>
     </div>
   </div>
@@ -554,61 +913,79 @@
   <div id="view-login" style="display:none">
     <div class="login-wrapper">
       <div class="login-card">
-        <h3>Agency Authentication</h3>
-        <p>Secure pipeline entrance. Enter your assigned portal credentials below.</p>
-        <div class="form-group" style="margin-bottom: 20px;">
-          <label>Username</label>
-          <input type="text" id="login-user" onkeydown="if(event.key === 'Enter') login()">
+        <svg class="seal seal--lg" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true">
+          <circle cx="32" cy="32" r="29" stroke="currentColor" stroke-width="2"></circle>
+          <circle cx="32" cy="32" r="23" stroke="currentColor" stroke-width="1" stroke-dasharray="2 3"></circle>
+          <path d="M32 15c-5.5 6.5-9.5 11.5-9.5 17.5a9.5 9.5 0 0019 0c0-6-4-11-9.5-17.5z" stroke="currentColor"
+            stroke-width="2" stroke-linejoin="round"></path>
+          <path d="M21 41l3.6-4.5 3.6 3.6 3.8-5.4 3.6 4.5 3.6-3.6" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+        <h3>Sign In</h3>
+        <div class="form-group" style="margin-bottom: 16px; margin-top: 22px;">
+          <label for="login-user">Username</label>
+          <input type="text" id="login-user" autocomplete="username" onkeydown="if(event.key === 'Enter') login()">
         </div>
-        <div class="form-group" style="margin-bottom: 28px;">
-          <label>Password</label>
-          <input type="password" id="login-pass" onkeydown="if(event.key === 'Enter') login()">
+        <div class="form-group" style="margin-bottom: 22px;">
+          <label for="login-pass">Password</label>
+          <input type="password" id="login-pass" autocomplete="current-password"
+            onkeydown="if(event.key === 'Enter') login()">
         </div>
         <div>
           <button class="login-btn" onclick="login()">Sign In</button>
         </div>
-        <div id="login-error"
-          style="color:#f87171; text-align:left; margin-top:16px; font-size:0.8rem; font-weight:700;"></div>
+        <div id="login-error"></div>
       </div>
     </div>
   </div>
 
   <div class="container" id="app-container" style="display:none">
     <header class="academic-header" id="dashboard-header" style="display:none">
-      <p class="affiliation">Metropolitan Electrical Division, Irrigation &amp; Waterways Directorate</p>
-      <h1 id="header-main-title">Digital Log Sheet Portal</h1>
-      <h2 id="header-title">Station Selection</h2>
+      <svg class="seal seal--lg" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="32" cy="32" r="29" stroke="currentColor" stroke-width="2"></circle>
+        <circle cx="32" cy="32" r="23" stroke="currentColor" stroke-width="1" stroke-dasharray="2 3"></circle>
+        <path d="M32 15c-5.5 6.5-9.5 11.5-9.5 17.5a9.5 9.5 0 0019 0c0-6-4-11-9.5-17.5z" stroke="currentColor"
+          stroke-width="2" stroke-linejoin="round"></path>
+        <path d="M21 41l3.6-4.5 3.6 3.6 3.8-5.4 3.6 4.5 3.6-3.6" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+      <div>
+        <p class="affiliation">Metropolitan Electrical Division &middot; Irrigation &amp; Waterways Directorate</p>
+        <h2 id="header-title">Station Selection</h2>
+      </div>
     </header>
 
     <div id="view-select" style="display:none">
-      <div id="list-container" class="station-grid"></div>
+      <div id="list-container"></div>
     </div>
 
     <div id="view-form" style="display:none">
       <div id="data-form">
         <fieldset class="form-section">
-          <legend>General Context Parameters</legend>
+          <legend>Details</legend>
           <div class="form-group-inline">
-            <div class="form-group"><label>Date of Observation *</label><input type="date" id="f-date" required></div>
-            <div class="form-group"><label>Operator / Recorder Name</label><input type="text" id="f-name"
-                placeholder="Full Registered Name"></div>
+            <div class="form-group"><label for="f-date">Date *</label><input type="date" id="f-date" required></div>
+            <div class="form-group"><label for="f-name">Operator</label><input type="text" id="f-name"></div>
           </div>
         </fieldset>
         <fieldset class="form-section">
-          <legend>Pump Runtime Registry</legend>
+          <legend>Pump Log</legend>
           <div id="pump-inputs"></div>
         </fieldset>
-        <div class="action-row"><span id="save-status">Live Sync: Standing By</span></div>
+        <div class="action-row"><span id="save-status"><span class="dot"></span>Ready</span></div>
       </div>
       <div class="recent-section">
-        <h3>Station Log Audit History</h3>
-        <div class="table-responsive-container" id="recent-list"></div>
+        <h3>Log History</h3>
+        <div id="recent-list"></div>
       </div>
     </div>
   </div>
 
   <script>
     var currentStation = '', stations = [];
+
+    function esc(s) { return s === undefined || s === null ? '' : String(s); }
 
     function getAuthHeader() {
       var t = localStorage.getItem('authToken');
@@ -636,7 +1013,7 @@
             document.getElementById('login-error').innerText = res.data.error || 'Invalid credentials';
           }
         })
-        .catch(function () { document.getElementById('login-error').innerText = 'Network Error'; });
+        .catch(function () { document.getElementById('login-error').innerText = 'Network error. Please try again.'; });
     }
 
     function logout() {
@@ -649,7 +1026,7 @@
       if (t) {
         window.open('/api/download?token=' + encodeURIComponent(t));
       } else {
-        alert('Please log in to download the log sheet.');
+        alert('Please sign in to download the log sheet.');
       }
     }
 
@@ -672,30 +1049,75 @@
     function loadLocations() {
       document.getElementById('view-login').style.display = 'none';
       document.getElementById('app-container').style.display = 'block';
-      document.getElementById('dashboard-header').style.display = 'block';
+      document.getElementById('dashboard-header').style.display = 'flex';
       document.getElementById('view-select').style.display = 'block';
       document.getElementById('logout-btn').style.display = 'inline-block';
       document.getElementById('download-btn').style.display = 'inline-block';
-      document.getElementById('list-container').innerHTML = '<p class="center-text">Loading locations...</p>';
+      document.getElementById('list-container').innerHTML = '<p class="empty-note">Loading stations&hellip;</p>';
 
       fetch('/api/locations', { headers: getAuthHeader() })
-        .then(function (r) { if (r.status === 401) logout(); return r.json(); })
+        .then(function (r) { if (r.status === 401) { logout(); return Promise.reject('unauthorized'); } return r.json(); })
         .then(function (d) {
           stations = d.locations || [];
           renderList();
         })
-        .catch(function (e) { console.error(e); document.getElementById('list-container').innerHTML = '<p class="center-text" style="color:#f87171">Error loading stations.</p>'; });
+        .catch(function (e) {
+          if (e === 'unauthorized') return;
+          console.error(e);
+          document.getElementById('list-container').innerHTML = '<p class="empty-note" style="color:var(--danger)">Error loading stations.</p>';
+        });
     }
 
     function renderList() {
-      var h = '';
-      for (var i = 0; i < stations.length; i++) {
-        var s = stations[i];
-        h += '<div class="station-item" onclick="openStation(\'' + s.sheetName + '\',\'' + s.displayName + '\')">' +
-          '<h3>' + s.displayName + '</h3>' +
-          '<p>Recorded entries: ' + s.entriesCount + ' / ' + s.maxEntries + '</p></div>';
+      var container = document.getElementById('list-container');
+      container.innerHTML = '';
+
+      if (!stations.length) {
+        container.innerHTML = '<p class="empty-note">No stations available.</p>';
+        return;
       }
-      document.getElementById('list-container').innerHTML = h;
+
+      stations.forEach(function (s, idx) {
+        var row = document.createElement('div');
+        row.className = 'station-item';
+        row.setAttribute('role', 'button');
+        row.setAttribute('tabindex', '0');
+
+        var pct = s.maxEntries ? (s.entriesCount / s.maxEntries) : 0;
+
+        var indexEl = document.createElement('span');
+        indexEl.className = 'station-index';
+        indexEl.textContent = String(idx + 1).padStart(2, '0');
+
+        var mainEl = document.createElement('span');
+        mainEl.className = 'station-main';
+        var h3 = document.createElement('h3');
+        h3.textContent = s.displayName;
+        mainEl.appendChild(h3);
+
+        var metaEl = document.createElement('span');
+        metaEl.className = 'station-meta';
+        var pill = document.createElement('span');
+        pill.className = 'count-pill' + (pct >= 0.9 ? ' count-pill--full' : '');
+        pill.textContent = s.entriesCount + '/' + s.maxEntries;
+        var chevron = document.createElement('span');
+        chevron.className = 'chevron';
+        chevron.setAttribute('aria-hidden', 'true');
+        chevron.innerHTML = '&rsaquo;';
+        metaEl.appendChild(pill);
+        metaEl.appendChild(chevron);
+
+        row.appendChild(indexEl);
+        row.appendChild(mainEl);
+        row.appendChild(metaEl);
+
+        row.addEventListener('click', function () { openStation(s.sheetName, s.displayName); });
+        row.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openStation(s.sheetName, s.displayName); }
+        });
+
+        container.appendChild(row);
+      });
     }
 
     function openStation(id, name) {
@@ -704,15 +1126,21 @@
       document.getElementById('view-select').style.display = 'none';
       document.getElementById('view-form').style.display = 'block';
       document.getElementById('back-btn').style.display = 'inline-block';
-      var h = '';
+
+      var wrap = document.getElementById('pump-inputs');
+      wrap.innerHTML = '';
       for (var i = 1; i <= 5; i++) {
-        h += '<div class="pump-box"><h4>Pump Unit ' + i + '</h4>' +
+        var box = document.createElement('div');
+        box.className = 'pump-box';
+        box.innerHTML =
+          '<div class="pump-label"><span class="pump-badge">' + i + '</span><h4>Pump Unit ' + i + '</h4></div>' +
           '<div class="time-row">' +
-          '<div class="form-group"><label>Start Time</label><input type="time" id="p' + i + '-start"></div>' +
-          '<div class="form-group"><label>Stop Time</label><input type="time" id="p' + i + '-stop"></div>' +
-          '</div></div>';
+          '<div class="form-group"><label for="p' + i + '-start">Start Time</label><input type="time" id="p' + i + '-start"></div>' +
+          '<div class="form-group"><label for="p' + i + '-stop">Stop Time</label><input type="time" id="p' + i + '-stop"></div>' +
+          '</div>';
+        wrap.appendChild(box);
       }
-      document.getElementById('pump-inputs').innerHTML = h;
+
       var inputs = document.querySelectorAll('#data-form input');
       for (var j = 0; j < inputs.length; j++) inputs[j].addEventListener('input', saveLive);
       document.getElementById('f-date').addEventListener('change', function () { clearForm(); loadRecent(); });
@@ -734,22 +1162,31 @@
     }
 
     var saveTimeout = null;
-    function saveLive() {
-      clearTimeout(saveTimeout);
+    function setStatus(text, color) {
       var st = document.getElementById('save-status');
       if (!st) return;
-      st.innerText = 'Live Sync: Saving Changes...'; st.style.color = 'var(--accent-amber)';
+      var dot = st.querySelector('.dot');
+      st.textContent = '';
+      if (dot) st.appendChild(dot);
+      else { dot = document.createElement('span'); dot.className = 'dot'; st.appendChild(dot); }
+      st.appendChild(document.createTextNode(text));
+      st.style.color = color;
+    }
+
+    function saveLive() {
+      clearTimeout(saveTimeout);
+      setStatus('Saving\u2026', 'var(--warning)');
       saveTimeout = setTimeout(function () {
         var date = document.getElementById('f-date').value;
         var name = document.getElementById('f-name').value;
-        if (!date) { st.innerText = 'Date required'; st.style.color = '#f87171'; return; }
+        if (!date) { setStatus('Date required', 'var(--danger)'); return; }
         var pumps = {}, hasData = false;
         for (var i = 1; i <= 5; i++) {
           var a = document.getElementById('p' + i + '-start').value;
           var b = document.getElementById('p' + i + '-stop').value;
           if (a || b) { hasData = true; pumps[i] = { start: a, stop: b }; }
         }
-        if (!hasData) { st.innerText = 'Live Sync: Ready'; st.style.color = 'var(--text-muted)'; return; }
+        if (!hasData) { setStatus('Ready', 'var(--ink-500)'); return; }
         localStorage.setItem('opName', name);
         fetch('/api/entry', {
           method: 'POST',
@@ -758,10 +1195,10 @@
         })
           .then(function (r) { return r.json(); })
           .then(function (d) {
-            if (d.success) { st.innerText = 'Saved \u2713'; st.style.color = 'var(--accent-emerald)'; loadRecent(); }
-            else { st.innerText = 'Error: ' + (d.error || 'Failed'); st.style.color = '#f87171'; }
+            if (d.success) { setStatus('Saved \u2713', 'var(--success)'); loadRecent(); }
+            else { setStatus('Error: ' + (d.error || 'Failed'), 'var(--danger)'); }
           })
-          .catch(function () { st.innerText = 'Network error'; st.style.color = '#f87171'; });
+          .catch(function () { setStatus('Network error', 'var(--danger)'); });
       }, 1000);
     }
 
@@ -769,23 +1206,50 @@
       fetch('/api/recent?sheet=' + currentStation, { headers: getAuthHeader() })
         .then(function (r) { return r.json(); })
         .then(function (d) {
-          var h = '';
+          var container = document.getElementById('recent-list');
+          container.innerHTML = '';
+
           if (!d.entries || d.entries.length === 0) {
-            h = '<p style="text-align:center;font-style:italic;color:var(--text-muted);padding:24px 0;">No observations recorded yet.</p>';
+            container.innerHTML = '<p class="empty-note">No entries yet.</p>';
           } else {
-            h = '<table class="academic-table"><thead><tr><th>Date</th><th>Operator</th><th>P1</th><th>P2</th><th>P3</th><th>P4</th><th>P5</th></tr></thead><tbody>';
-            for (var i = 0; i < d.entries.length; i++) {
-              var row = d.entries[i];
-              h += '<tr><td><strong>' + row.date + '</strong></td><td>' + (row.operator || '\u2014') + '</td>';
+            d.entries.forEach(function (row) {
+              var card = document.createElement('div');
+              card.className = 'log-card';
+
+              var head = document.createElement('div');
+              head.className = 'log-card-head';
+              var dateEl = document.createElement('span');
+              dateEl.className = 'log-date';
+              dateEl.textContent = row.date;
+              var opEl = document.createElement('span');
+              opEl.className = 'log-operator';
+              opEl.textContent = row.operator || '\u2014';
+              head.appendChild(dateEl);
+              head.appendChild(opEl);
+
+              var grid = document.createElement('div');
+              grid.className = 'log-pumps-grid';
               for (var p = 1; p <= 5; p++) {
                 var pm = row.pumps[p];
-                h += '<td>' + ((pm && (pm.start || pm.stop)) ? (pm.start || '-') + ' \u2192 ' + (pm.stop || '-') : '\u2014') + '</td>';
+                var cell = document.createElement('div');
+                cell.className = 'log-pump-cell';
+                var lbl = document.createElement('span');
+                lbl.className = 'lp-label';
+                lbl.textContent = 'P' + p;
+                var time = document.createElement('span');
+                var has = pm && (pm.start || pm.stop);
+                time.className = 'lp-time' + (has ? '' : ' is-empty');
+                time.textContent = has ? (pm.start || '\u2014') + ' \u2192 ' + (pm.stop || '\u2014') : '\u2014';
+                cell.appendChild(lbl);
+                cell.appendChild(time);
+                grid.appendChild(cell);
               }
-              h += '</tr>';
-            }
-            h += '</tbody></table>';
+
+              card.appendChild(head);
+              card.appendChild(grid);
+              container.appendChild(card);
+            });
           }
-          document.getElementById('recent-list').innerHTML = h;
 
           var cd = document.getElementById('f-date').value;
           var td = d.entries && d.entries.find(function (e) { return e.date === cd; });

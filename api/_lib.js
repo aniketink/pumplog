@@ -17,7 +17,7 @@ function getAuth() {
 const AGENCIES = {
   'sas': {
     pass: 'sas123',
-    spreadsheetId: '1eTbAZyLJDcHZGo3aKnzC8VWOsL7RyQxEyfHhEau-dAQ',
+    spreadsheetId: '13Wx72GjXua4kFGJMEt6je_3aUH7fIkYiukYKiBWyW3c',
     sheets: {
       'CHARIAL':       { name: 'Charial-I',     start: 13, end: 118 },
       'MUKUNDAPUR':    { name: 'Mukundapur',    start: 13, end: 118 },
@@ -29,7 +29,7 @@ const AGENCIES = {
   },
   'tecnico': {
     pass: 'tecnico123',
-    spreadsheetId: 'TECNICO_SPREADSHEET_ID_HERE', 
+    spreadsheetId: '1YvDRyxEIMqGbyqfbgobdOkNN1aBYRgjh9FLQkagowIs', 
     sheets: {
       'SANTOSHPUR':   { name: 'Santoshpur',   start: 13, end: 118 },
       'GARFA':        { name: 'Garfa',        start: 13, end: 118 },
@@ -39,7 +39,7 @@ const AGENCIES = {
   },
   'geebee': {
     pass: 'geebee123',
-    spreadsheetId: 'GEEBEE_SPREADSHEET_ID_HERE',
+    spreadsheetId: '1FISPmDehaA0DH1QTx44H1Y7d5pNb4EnXy4pbKos-UrI',
     sheets: {
       'LAKETOWN':     { name: 'Laketown',     start: 13, end: 118 },
     }

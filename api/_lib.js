@@ -57,4 +57,27 @@ function fractionToTimeStr(frac) {
   return `${String(Math.floor(totalMins / 60) % 24).padStart(2,'0')}:${String(totalMins % 60).padStart(2,'0')}`;
 }
 
-module.exports = { getAuth, SPREADSHEET_ID, SHEETS, COLS_INDEX, COLS_LETTERS, jsDateToSerial, serialToDateStr, fractionToTimeStr };
+const USERS = {
+  'charial': { pass: 'charial123', sheets: ['CHARIAL'] },
+  'mukundapur': { pass: 'mukundapur123', sheets: ['MUKUNDAPUR'] },
+  'kalagachia': { pass: 'kalagachia123', sheets: ['KALAGACHIA-I', 'KALAGACHIA-II'] },
+  'begore': { pass: 'begore123', sheets: ['BEGORE-1', 'BEGORE-II'] },
+  'admin': { pass: 'admin123', sheets: Object.keys(SHEETS) }
+};
+
+function authenticate(req) {
+  const authHeader = req.headers['authorization'];
+  if (!authHeader) return null;
+  const match = authHeader.match(/^Basic\s+(.*)$/);
+  if (!match) return null;
+  try {
+    const [user, pass] = Buffer.from(match[1], 'base64').toString('utf8').split(':');
+    const u = USERS[user];
+    if (u && u.pass === pass) {
+      return { username: user, allowedSheets: u.sheets };
+    }
+  } catch(e) {}
+  return null;
+}
+
+module.exports = { getAuth, SPREADSHEET_ID, SHEETS, COLS_INDEX, COLS_LETTERS, jsDateToSerial, serialToDateStr, fractionToTimeStr, authenticate };

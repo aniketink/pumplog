@@ -1,12 +1,19 @@
 const { google } = require('googleapis');
-const { getAuth, SPREADSHEET_ID, SHEETS, COLS_INDEX, serialToDateStr, fractionToTimeStr } = require('../_lib');
+const { getAuth, SPREADSHEET_ID, SHEETS, COLS_INDEX, serialToDateStr, fractionToTimeStr, authenticate } = require('./_lib');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Headers', 'Authorization');
+  if (req.method === 'OPTIONS') return res.status(200).end();
+
+  const user = authenticate(req);
+  if (!user) return res.status(401).json({ error: 'Unauthorized' });
+
   try {
     const sheet = req.query.sheet;
     const config = SHEETS[sheet];
     if (!config) return res.status(400).json({ error: 'Invalid sheet' });
+    if (!user.allowedSheets.includes(sheet)) return res.status(403).json({ error: 'Forbidden' });
 
     const sheetsAPI = google.sheets({ version: 'v4', auth: getAuth() });
     const response = await sheetsAPI.spreadsheets.values.get({

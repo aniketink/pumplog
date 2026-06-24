@@ -3,6 +3,4 @@ google-credentials.json
 *.xlsx
 backups/
 .env
-public/
-server.js
 api/index.js

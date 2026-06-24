@@ -1,5 +1,5 @@
 const { google } = require('googleapis');
-const { getAuth, SPREADSHEET_ID, SHEETS, COLS_INDEX, serialToDateStr, fractionToTimeStr, authenticate } = require('./_lib');
+const { getAuth, COLS_INDEX, serialToDateStr, fractionToTimeStr, authenticate } = require('./_lib');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -11,13 +11,13 @@ module.exports = async (req, res) => {
 
   try {
     const sheet = req.query.sheet;
-    const config = SHEETS[sheet];
-    if (!config) return res.status(400).json({ error: 'Invalid sheet' });
-    if (!user.allowedSheets.includes(sheet)) return res.status(403).json({ error: 'Forbidden' });
+    const config = user.sheets[sheet];
+    if (!config) return res.status(403).json({ error: 'Forbidden' });
+    if (user.spreadsheetId.includes('HERE')) return res.json({ entries: [] });
 
     const sheetsAPI = google.sheets({ version: 'v4', auth: getAuth() });
     const response = await sheetsAPI.spreadsheets.values.get({
-      spreadsheetId: SPREADSHEET_ID,
+      spreadsheetId: user.spreadsheetId,
       range: `${sheet}!A${config.start}:S${config.end}`,
       valueRenderOption: 'UNFORMATTED_VALUE',
       dateTimeRenderOption: 'SERIAL_NUMBER'

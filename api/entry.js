@@ -1,5 +1,5 @@
 const { google } = require('googleapis');
-const { getAuth, SPREADSHEET_ID, SHEETS, COLS_LETTERS, jsDateToSerial, authenticate } = require('./_lib');
+const { getAuth, COLS_LETTERS, jsDateToSerial, authenticate } = require('./_lib');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -14,13 +14,15 @@ module.exports = async (req, res) => {
   try {
     const { sheetName, date, pumps, operatorName } = req.body;
     if (!sheetName || !date) return res.status(400).json({ error: 'Missing data' });
-    if (!user.allowedSheets.includes(sheetName)) return res.status(403).json({ error: 'Forbidden' });
+    
+    const config = user.sheets[sheetName];
+    if (!config) return res.status(403).json({ error: 'Forbidden' });
+    if (user.spreadsheetId.includes('HERE')) return res.status(400).json({ error: 'Spreadsheet ID missing for this agency. Please configure it in the backend.' });
 
-    const config = SHEETS[sheetName];
     const sheetsAPI = google.sheets({ version: 'v4', auth: getAuth() });
 
     const getRes = await sheetsAPI.spreadsheets.values.get({
-      spreadsheetId: SPREADSHEET_ID,
+      spreadsheetId: user.spreadsheetId,
       range: `${sheetName}!A${config.start}:S${config.end}`,
       valueRenderOption: 'UNFORMATTED_VALUE',
       dateTimeRenderOption: 'SERIAL_NUMBER'
@@ -57,7 +59,7 @@ module.exports = async (req, res) => {
     if (operatorName !== undefined) data.push({ range: `${sheetName}!S${rowNum}`, values: [[operatorName]] });
 
     await sheetsAPI.spreadsheets.values.batchUpdate({
-      spreadsheetId: SPREADSHEET_ID,
+      spreadsheetId: user.spreadsheetId,
       requestBody: { valueInputOption: 'USER_ENTERED', data }
     });
     res.json({ success: true });

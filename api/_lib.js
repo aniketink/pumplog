@@ -1,8 +1,6 @@
 const { google } = require('googleapis');
 const path = require('path');
 
-const SPREADSHEET_ID = '1eTbAZyLJDcHZGo3aKnzC8VWOsL7RyQxEyfHhEau-dAQ';
-
 function getAuth() {
   if (process.env.GOOGLE_CREDENTIALS) {
     return new google.auth.GoogleAuth({
@@ -16,13 +14,36 @@ function getAuth() {
   });
 }
 
-const SHEETS = {
-  'CHARIAL':       { name: 'Charial',      start: 13, end: 118 },
-  'MUKUNDAPUR':    { name: 'Mukundapur',   start: 13, end: 118 },
-  'KALAGACHIA-I':  { name: 'Kalagachia-I', start: 13, end: 118 },
-  'KALAGACHIA-II': { name: 'Kalagachia-II',start: 13, end: 118 },
-  'BEGORE-1':      { name: 'Begore-I',     start: 13, end: 118 },
-  'BEGORE-II':     { name: 'Begore-II',    start: 13, end: 118 },
+const AGENCIES = {
+  'sas': {
+    pass: 'sas123',
+    spreadsheetId: '1eTbAZyLJDcHZGo3aKnzC8VWOsL7RyQxEyfHhEau-dAQ',
+    sheets: {
+      'CHARIAL':       { name: 'Charial-I',     start: 13, end: 118 },
+      'MUKUNDAPUR':    { name: 'Mukundapur',    start: 13, end: 118 },
+      'KALAGACHIA-I':  { name: 'Kalagachia-I',  start: 13, end: 118 },
+      'KALAGACHIA-II': { name: 'Kalagachia-II', start: 13, end: 118 },
+      'BEGORE-1':      { name: 'Begore-I',      start: 13, end: 118 },
+      'BEGORE-II':     { name: 'Begore-II',     start: 13, end: 118 },
+    }
+  },
+  'tecnico': {
+    pass: 'tecnico123',
+    spreadsheetId: 'TECNICO_SPREADSHEET_ID_HERE', 
+    sheets: {
+      'SANTOSHPUR':   { name: 'Santoshpur',   start: 13, end: 118 },
+      'GARFA':        { name: 'Garfa',        start: 13, end: 118 },
+      'PUJALI-I':     { name: 'Pujali-I',     start: 13, end: 118 },
+      'KHEYADAKHAL':  { name: 'Kheyadakhal',  start: 13, end: 118 },
+    }
+  },
+  'geebee': {
+    pass: 'geebee123',
+    spreadsheetId: 'GEEBEE_SPREADSHEET_ID_HERE',
+    sheets: {
+      'LAKETOWN':     { name: 'Laketown',     start: 13, end: 118 },
+    }
+  }
 };
 
 const COLS_INDEX = {
@@ -57,14 +78,6 @@ function fractionToTimeStr(frac) {
   return `${String(Math.floor(totalMins / 60) % 24).padStart(2,'0')}:${String(totalMins % 60).padStart(2,'0')}`;
 }
 
-const USERS = {
-  'charial': { pass: 'charial123', sheets: ['CHARIAL'] },
-  'mukundapur': { pass: 'mukundapur123', sheets: ['MUKUNDAPUR'] },
-  'kalagachia': { pass: 'kalagachia123', sheets: ['KALAGACHIA-I', 'KALAGACHIA-II'] },
-  'begore': { pass: 'begore123', sheets: ['BEGORE-1', 'BEGORE-II'] },
-  'admin': { pass: 'admin123', sheets: Object.keys(SHEETS) }
-};
-
 function authenticate(req) {
   const authHeader = req.headers['authorization'];
   if (!authHeader) return null;
@@ -72,12 +85,12 @@ function authenticate(req) {
   if (!match) return null;
   try {
     const [user, pass] = Buffer.from(match[1], 'base64').toString('utf8').split(':');
-    const u = USERS[user];
-    if (u && u.pass === pass) {
-      return { username: user, allowedSheets: u.sheets };
+    const agency = AGENCIES[user];
+    if (agency && agency.pass === pass) {
+      return { username: user, spreadsheetId: agency.spreadsheetId, sheets: agency.sheets };
     }
   } catch(e) {}
   return null;
 }
 
-module.exports = { getAuth, SPREADSHEET_ID, SHEETS, COLS_INDEX, COLS_LETTERS, jsDateToSerial, serialToDateStr, fractionToTimeStr, authenticate };
+module.exports = { getAuth, COLS_INDEX, COLS_LETTERS, jsDateToSerial, serialToDateStr, fractionToTimeStr, authenticate };

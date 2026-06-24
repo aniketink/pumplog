@@ -57,7 +57,7 @@ body{font-family:Cambria,Georgia,"Times New Roman",serif;background:var(--bg-des
 <div class="top-nav" id="nav" style="display:none">
   <div><button id="back-btn" onclick="goBack()" style="display:none">&larr; Back</button></div>
   <div><button id="logout-btn" onclick="logout()" style="display:none">Logout</button></div>
-  <div><button onclick="window.open('/api/download')">Download (.xlsx)</button></div>
+  <div><button onclick="downloadExcel()">Download (.xlsx)</button></div>
 </div>
 <div class="container" id="app-container" style="display:none">
   <header class="academic-header">
@@ -142,6 +142,15 @@ function login() {
 function logout() {
   localStorage.removeItem('authToken');
   location.reload();
+}
+
+function downloadExcel() {
+  var t = localStorage.getItem('authToken');
+  if (t) {
+    window.open('/api/download?token=' + encodeURIComponent(t));
+  } else {
+    alert('Please log in to download the log sheet.');
+  }
 }
 
 window.onload = function() {

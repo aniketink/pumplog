@@ -10,11 +10,19 @@ app.use(express.static('public'));
 
 const SPREADSHEET_ID = '1eTbAZyLJDcHZGo3aKnzC8VWOsL7RyQxEyfHhEau-dAQ';
 
-// Setup Google Auth using the downloaded credentials file
-const auth = new google.auth.GoogleAuth({
-  keyFile: 'google-credentials.json',
-  scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-});
+// Setup Google Auth using env vars (Vercel) or local file
+let auth;
+if (process.env.GOOGLE_CREDENTIALS) {
+  auth = new google.auth.GoogleAuth({
+    credentials: JSON.parse(process.env.GOOGLE_CREDENTIALS),
+    scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+  });
+} else {
+  auth = new google.auth.GoogleAuth({
+    keyFile: 'google-credentials.json',
+    scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+  });
+}
 
 const SHEETS = {
   'CHARIAL': { name: 'Charial', start: 13, end: 118 },
@@ -236,6 +244,10 @@ app.get('/api/download', (req, res) => {
   res.redirect(`https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=xlsx`);
 });
 
-app.listen(3000, () => {
-  console.log('Google Sheets Server started on port 3000');
-});
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(3000, () => {
+    console.log('Google Sheets Server started on port 3000');
+  });
+}
+
+module.exports = app;

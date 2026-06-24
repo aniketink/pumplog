@@ -211,7 +211,7 @@ app.get('/api/download', (req, res) => {
   res.redirect(`https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=xlsx`);
 });
 
-app.get('/{*path}', (req, res) => {
+app.use((req, res) => {
   res.setHeader('Content-Type', 'text/html');
   res.send(PAGE_HTML);
 });

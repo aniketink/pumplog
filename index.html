@@ -1012,7 +1012,19 @@
     function downloadExcel() {
       var t = localStorage.getItem('authToken');
       if (t) {
-        window.open('/api/download?token=' + encodeURIComponent(t));
+        var url = '/api/download?token=' + encodeURIComponent(t);
+        if (currentStation && currentStation.indexOf(':') !== -1) {
+          var agency = currentStation.split(':')[0];
+          url += '&agency=' + encodeURIComponent(agency);
+        } else {
+          var isAdmin = stations.some(function (s) { return s.sheetName && s.sheetName.indexOf(':') !== -1; });
+          if (isAdmin) {
+            var ag = prompt('Select agency to export (sas, tecnico, geebee):', 'sas');
+            if (!ag) return;
+            url += '&agency=' + encodeURIComponent(ag.toLowerCase().trim());
+          }
+        }
+        window.open(url);
       } else {
         alert('Please sign in to download the log sheet.');
       }
@@ -1081,6 +1093,32 @@
         mainEl.className = 'station-main';
         var h3 = document.createElement('h3');
         h3.textContent = s.displayName;
+
+        if (s.agency) {
+          var badge = document.createElement('span');
+          badge.textContent = s.agency.toUpperCase();
+          badge.style.marginLeft = '10px';
+          badge.style.fontSize = '0.65rem';
+          badge.style.fontWeight = '700';
+          badge.style.padding = '3px 8px';
+          badge.style.borderRadius = '4px';
+          badge.style.textTransform = 'uppercase';
+          badge.style.display = 'inline-block';
+          badge.style.verticalAlign = 'middle';
+          
+          if (s.agency === 'sas') {
+            badge.style.background = '#e0f2fe';
+            badge.style.color = '#0369a1';
+          } else if (s.agency === 'tecnico') {
+            badge.style.background = '#fce7f3';
+            badge.style.color = '#be185d';
+          } else if (s.agency === 'geebee') {
+            badge.style.background = '#fef3c7';
+            badge.style.color = '#b45309';
+          }
+          h3.appendChild(badge);
+        }
+
         mainEl.appendChild(h3);
 
         var metaEl = document.createElement('span');
@@ -1110,7 +1148,12 @@
 
     function openStation(id, name) {
       currentStation = id;
-      document.getElementById('header-title').innerText = name;
+      var titleText = name;
+      if (id && id.indexOf(':') !== -1) {
+        var agency = id.split(':')[0].toUpperCase();
+        titleText += ' (' + agency + ')';
+      }
+      document.getElementById('header-title').innerText = titleText;
       document.getElementById('view-select').style.display = 'none';
       document.getElementById('view-form').style.display = 'block';
       document.getElementById('back-btn').style.display = 'inline-block';

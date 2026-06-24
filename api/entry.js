@@ -12,18 +12,36 @@ module.exports = async (req, res) => {
   if (!user) return res.status(401).json({ error: 'Unauthorized' });
 
   try {
+    const { AGENCIES } = require('./_lib');
     const { sheetName, date, pumps, operatorName } = req.body;
     if (!sheetName || !date) return res.status(400).json({ error: 'Missing data' });
     
-    const config = user.sheets[sheetName];
+    let targetSpreadsheetId = user.spreadsheetId;
+    let targetSheets = user.sheets;
+    let actualSheetName = sheetName;
+
+    if (user.isAdmin) {
+      const parts = (sheetName || '').split(':');
+      if (parts.length === 2) {
+        const agencyKey = parts[0];
+        actualSheetName = parts[1];
+        const agency = AGENCIES[agencyKey];
+        if (agency) {
+          targetSpreadsheetId = agency.spreadsheetId;
+          targetSheets = agency.sheets;
+        }
+      }
+    }
+
+    const config = targetSheets ? targetSheets[actualSheetName] : null;
     if (!config) return res.status(403).json({ error: 'Forbidden' });
-    if (user.spreadsheetId.includes('HERE')) return res.status(400).json({ error: 'Spreadsheet ID missing for this agency. Please configure it in the backend.' });
+    if (!targetSpreadsheetId || targetSpreadsheetId.includes('HERE')) return res.status(400).json({ error: 'Spreadsheet ID missing for this agency. Please configure it in the backend.' });
 
     const sheetsAPI = google.sheets({ version: 'v4', auth: getAuth() });
 
     const getRes = await sheetsAPI.spreadsheets.values.get({
-      spreadsheetId: user.spreadsheetId,
-      range: `${sheetName}!A${config.start}:S${config.end}`,
+      spreadsheetId: targetSpreadsheetId,
+      range: `${actualSheetName}!A${config.start}:S${config.end}`,
       valueRenderOption: 'UNFORMATTED_VALUE',
       dateTimeRenderOption: 'SERIAL_NUMBER'
     });
@@ -45,21 +63,21 @@ module.exports = async (req, res) => {
     if (rowNum === -1) return res.status(400).json({ error: 'Sheet is full' });
 
     const data = [
-      { range: `${sheetName}!A${rowNum}`, values: [[rowNum - config.start + 1]] },
-      { range: `${sheetName}!B${rowNum}`, values: [[date]] },
+      { range: `${actualSheetName}!A${rowNum}`, values: [[rowNum - config.start + 1]] },
+      { range: `${actualSheetName}!B${rowNum}`, values: [[date]] },
     ];
     for (let i = 1; i <= 5; i++) {
       const p = pumps[i] || pumps[String(i)];
       if (p) {
         const cols = COLS_LETTERS[i];
-        if (p.start !== undefined) data.push({ range: `${sheetName}!${cols.start}${rowNum}`, values: [[p.start]] });
-        if (p.stop !== undefined) data.push({ range: `${sheetName}!${cols.stop}${rowNum}`, values: [[p.stop]] });
+        if (p.start !== undefined) data.push({ range: `${actualSheetName}!${cols.start}${rowNum}`, values: [[p.start]] });
+        if (p.stop !== undefined) data.push({ range: `${actualSheetName}!${cols.stop}${rowNum}`, values: [[p.stop]] });
       }
     }
-    if (operatorName !== undefined) data.push({ range: `${sheetName}!S${rowNum}`, values: [[operatorName]] });
+    if (operatorName !== undefined) data.push({ range: `${actualSheetName}!S${rowNum}`, values: [[operatorName]] });
 
     await sheetsAPI.spreadsheets.values.batchUpdate({
-      spreadsheetId: user.spreadsheetId,
+      spreadsheetId: targetSpreadsheetId,
       requestBody: { valueInputOption: 'USER_ENTERED', data }
     });
     res.json({ success: true });

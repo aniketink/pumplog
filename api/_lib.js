@@ -43,6 +43,10 @@ const AGENCIES = {
     sheets: {
       'Sheet1': { name: 'Laketown', start: 13, end: 118 },
     }
+  },
+  'admin': {
+    pass: 'admin123',
+    isAdmin: true
   }
 };
 
@@ -87,10 +91,10 @@ function authenticate(req) {
     const [user, pass] = Buffer.from(match[1], 'base64').toString('utf8').split(':');
     const agency = AGENCIES[user];
     if (agency && agency.pass === pass) {
-      return { username: user, spreadsheetId: agency.spreadsheetId, sheets: agency.sheets };
+      return { username: user, spreadsheetId: agency.spreadsheetId, sheets: agency.sheets, isAdmin: !!agency.isAdmin };
     }
   } catch(e) {}
   return null;
 }
 
-module.exports = { getAuth, COLS_INDEX, COLS_LETTERS, jsDateToSerial, serialToDateStr, fractionToTimeStr, authenticate };
+module.exports = { getAuth, AGENCIES, COLS_INDEX, COLS_LETTERS, jsDateToSerial, serialToDateStr, fractionToTimeStr, authenticate };

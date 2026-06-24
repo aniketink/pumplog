@@ -10,15 +10,33 @@ module.exports = async (req, res) => {
   if (!user) return res.status(401).json({ error: 'Unauthorized' });
 
   try {
+    const { AGENCIES } = require('./_lib');
     const sheet = req.query.sheet;
-    const config = user.sheets[sheet];
+    let targetSpreadsheetId = user.spreadsheetId;
+    let targetSheets = user.sheets;
+    let actualSheetName = sheet;
+
+    if (user.isAdmin) {
+      const parts = (sheet || '').split(':');
+      if (parts.length === 2) {
+        const agencyKey = parts[0];
+        actualSheetName = parts[1];
+        const agency = AGENCIES[agencyKey];
+        if (agency) {
+          targetSpreadsheetId = agency.spreadsheetId;
+          targetSheets = agency.sheets;
+        }
+      }
+    }
+
+    const config = targetSheets ? targetSheets[actualSheetName] : null;
     if (!config) return res.status(403).json({ error: 'Forbidden' });
-    if (user.spreadsheetId.includes('HERE')) return res.json({ entries: [] });
+    if (!targetSpreadsheetId || targetSpreadsheetId.includes('HERE')) return res.json({ entries: [] });
 
     const sheetsAPI = google.sheets({ version: 'v4', auth: getAuth() });
     const response = await sheetsAPI.spreadsheets.values.get({
-      spreadsheetId: user.spreadsheetId,
-      range: `${sheet}!A${config.start}:S${config.end}`,
+      spreadsheetId: targetSpreadsheetId,
+      range: `${actualSheetName}!A${config.start}:S${config.end}`,
       valueRenderOption: 'UNFORMATTED_VALUE',
       dateTimeRenderOption: 'SERIAL_NUMBER'
     });

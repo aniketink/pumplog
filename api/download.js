@@ -1,4 +1,4 @@
-const { authenticate } = require('./_lib');
+const { authenticate, AGENCIES } = require('./_lib');
 
 module.exports = (req, res) => {
   if (req.query.token) {
@@ -6,6 +6,20 @@ module.exports = (req, res) => {
   }
   const user = authenticate(req);
   if (!user) return res.status(401).send('Unauthorized');
-  if (user.spreadsheetId.includes('HERE')) return res.status(400).send('Spreadsheet ID missing for this agency. Please configure it in the backend.');
-  res.redirect(`https://docs.google.com/spreadsheets/d/${user.spreadsheetId}/export?format=xlsx`);
+
+  let spreadsheetId = user.spreadsheetId;
+  if (user.isAdmin) {
+    const targetAgencyKey = req.query.agency;
+    const agency = AGENCIES[targetAgencyKey];
+    if (agency) {
+      spreadsheetId = agency.spreadsheetId;
+    } else {
+      return res.status(400).send('Please specify a valid agency parameter (e.g., ?agency=sas)');
+    }
+  }
+
+  if (!spreadsheetId || spreadsheetId.includes('HERE')) {
+    return res.status(400).send('Spreadsheet ID missing for this agency. Please configure it.');
+  }
+  res.redirect(`https://docs.google.com/spreadsheets/d/${spreadsheetId}/export?format=xlsx`);
 };

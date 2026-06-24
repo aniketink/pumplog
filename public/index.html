@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Digital Log Sheet: Dewatering Pump</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="loading" class="center-text">Loading dataset...</div>
+
+    <div class="top-nav" id="nav" style="display: none;">
+        <div>
+            <button id="back-btn" onclick="goBack()" style="display: none;">&larr; Back to Directory</button>
+        </div>
+        <div style="text-align: right;">
+            <button onclick="window.open('/api/download')">Download Archive (.xlsx)</button>
+        </div>
+    </div>
+
+    <div class="container" id="app-container" style="display: none;">
+        
+        <header class="academic-header">
+            <h1>Digital Log Sheet: Operational Data</h1>
+            <h2 id="header-title">Station Selection</h2>
+            <p class="affiliation">Metropolitan Electrical Division, Irrigation & Waterways Directorate</p>
+            <hr class="heavy-rule">
+        </header>
+
+        <!-- Selection Screen -->
+        <div id="view-select">
+            <div id="list-container"></div>
+        </div>
+
+        <!-- Form Screen -->
+        <div id="view-form" style="display: none;">
+            <div id="data-form">
+                <fieldset class="form-section">
+                    <legend>I. General Information</legend>
+                    <div class="form-group-inline">
+                        <div class="form-group">
+                            <label>Date of Observation *</label>
+                            <input type="date" id="f-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Operator / Recorder Name</label>
+                            <input type="text" id="f-name">
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset class="form-section">
+                    <legend>II. Pump Operational Metrics</legend>
+                    <div id="pump-inputs"></div>
+                </fieldset>
+
+                <div class="action-row" style="text-align: right; margin-top: 10px;">
+                    <span id="save-status" style="font-style: italic; color: #666; font-size: 0.95rem;">Live Sync: Ready</span>
+                </div>
+            </div>
+
+            <div class="recent-section">
+                <hr class="light-rule">
+                <h3>Table 1: Recent Observations</h3>
+                <div id="recent-list"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -358,6 +358,7 @@
       display: flex;
       flex-direction: column;
       gap: 6px;
+      min-width: 0; /* Prevents overflow in CSS Grid/Flexbox */
     }
 
     .form-group label {
@@ -368,6 +369,7 @@
 
     .form-group input {
       width: 100%;
+      min-width: 0; /* Prevents native inputs (date/time) from overflowing */
       padding: 13px 14px;
       border: 1.5px solid var(--line-strong);
       border-radius: var(--radius-md);
@@ -814,6 +816,12 @@
 
       .form-group-inline {
         gap: 14px;
+      }
+
+      .form-group input {
+        padding: 10px 10px;
+        font-size: 0.9rem;
+        min-height: 40px;
       }
 
       .station-item {

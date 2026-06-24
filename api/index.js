@@ -202,4 +202,167 @@ app.get('/api/download', (req, res) => {
   res.redirect(`https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=xlsx`);
 });
 
+app.get('*', (req, res) => {
+  res.setHeader('Content-Type', 'text/html');
+  res.send(PAGE_HTML);
+});
+
+const PAGE_HTML = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pump Log Sheet</title>
+<style>
+:root{--text-main:#1a1a1a;--text-muted:#555;--bg-desk:#e9ecef;--bg-paper:#fdfdfc;--border-light:#e0e0e0;--border-dark:#222;--accent:#8b0000}
+body{font-family:Cambria,Georgia,"Times New Roman",serif;background:var(--bg-desk);color:var(--text-main);margin:0;padding:0;line-height:1.6;font-size:16px}
+.center-text{text-align:center;padding:50px;font-size:1.2rem;font-style:italic}
+.container{max-width:850px;margin:40px auto;background:var(--bg-paper);padding:60px 80px;box-shadow:0 10px 30px rgba(0,0,0,.08);min-height:calc(100vh - 80px);box-sizing:border-box}
+.top-nav{display:flex;justify-content:space-between;padding:10px 20px;background:transparent;font-family:Helvetica,Arial,sans-serif;font-size:.85rem;position:absolute;width:100%;top:0;box-sizing:border-box}
+.top-nav button{background:rgba(255,255,255,.8);border:1px solid #aaa;padding:4px 12px;cursor:pointer;font-size:.8rem;color:#333;border-radius:2px}
+.top-nav button:hover{background:#fff;border-color:#333}
+.academic-header{text-align:center;margin-bottom:40px}
+.academic-header h1{font-size:2.2rem;margin:0 0 10px;font-weight:normal;font-variant:small-caps}
+.academic-header h2{font-size:1.3rem;margin:0 0 15px;font-weight:normal;font-style:italic;color:var(--text-muted)}
+.affiliation{font-size:1rem;margin:0 0 25px;color:var(--text-muted)}
+.heavy-rule{border:0;border-top:2px solid var(--border-dark);border-bottom:1px solid var(--border-dark);height:4px;margin-bottom:40px}
+.light-rule{border:0;border-top:1px solid #ccc;margin:30px 0}
+.form-section{border:none;border-top:1px solid var(--border-dark);margin:40px 0;padding:25px 0 0}
+.form-section legend{font-weight:bold;font-size:1.1rem;padding:0 15px;margin-left:-15px;text-transform:uppercase;letter-spacing:.08em}
+.form-group-inline{display:flex;gap:40px;margin-bottom:20px}
+.form-group{flex:1}
+.form-group label{display:block;margin-bottom:5px;font-size:.85rem;font-family:Helvetica,Arial,sans-serif;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em}
+.form-group input{width:100%;padding:8px 0;border:none;border-bottom:1px solid var(--border-light);font-family:inherit;font-size:1.1rem;color:var(--text-main);background:transparent;box-sizing:border-box}
+.form-group input:focus{outline:none;border-bottom:2px solid var(--accent)}
+.pump-box{margin-bottom:15px;display:flex;align-items:flex-end;padding:10px 0 20px;border-bottom:1px dotted var(--border-light)}
+.pump-box:last-child{border-bottom:none}
+.pump-box h4{margin:0 0 8px;font-size:1.1rem;font-style:italic;font-weight:normal;width:150px}
+.time-row{display:flex;gap:30px;flex:1}
+.action-row{margin-top:20px;padding-top:15px;border-top:1px solid var(--border-light);text-align:right;font-family:Helvetica,Arial,sans-serif}
+#save-status{font-size:.9rem;font-style:italic;padding:4px 10px;background:#f9f9f9;border:1px solid var(--border-light);border-radius:3px}
+.recent-section{margin-top:60px}
+.recent-section h3{font-size:1.1rem;font-weight:normal;text-align:center;margin-bottom:15px;font-variant:small-caps}
+.academic-table{width:100%;border-collapse:collapse;font-size:.9rem}
+.academic-table th,.academic-table td{padding:10px 8px;text-align:left}
+.academic-table th{border-top:2px solid var(--border-dark);border-bottom:1px solid var(--border-dark);font-family:Helvetica,sans-serif;text-transform:uppercase;font-size:.75rem;letter-spacing:.05em;font-weight:normal;color:var(--text-muted)}
+.academic-table tr:last-child td{border-bottom:2px solid var(--border-dark)}
+.academic-table td{border-bottom:1px solid var(--border-light)}
+.station-item{padding:25px 30px;border:1px solid var(--border-light);margin-bottom:20px;cursor:pointer;transition:all .2s;background:#fff}
+.station-item:hover{border-color:var(--border-dark);box-shadow:3px 3px 0 var(--border-light);transform:translate(-2px,-2px)}
+.station-item h3{margin:0 0 8px;font-size:1.3rem;font-weight:normal;font-variant:small-caps;color:var(--accent)}
+.station-item p{margin:0;font-style:italic;color:var(--text-muted);font-size:.95rem}
+@media(max-width:768px){
+.container{padding:40px 25px;margin:0;min-height:100vh;width:100%}
+.top-nav{position:relative;padding:15px 25px;background:#fff;border-bottom:1px solid var(--border-light)}
+.form-group-inline{flex-direction:column;gap:20px}
+.pump-box{flex-direction:column;align-items:flex-start;padding:15px 0}
+.time-row{flex-direction:row;width:100%}
+.academic-table{display:block;overflow-x:auto;white-space:nowrap}
+}
+</style>
+</head>
+<body>
+<div id="loading" class="center-text">Loading dataset...</div>
+<div class="top-nav" id="nav" style="display:none">
+<div><button id="back-btn" onclick="goBack()" style="display:none">&larr; Back</button></div>
+<div><button onclick="window.open('/api/download')">Download (.xlsx)</button></div>
+</div>
+<div class="container" id="app-container" style="display:none">
+<header class="academic-header">
+<h1>Digital Log Sheet: Operational Data</h1>
+<h2 id="header-title">Station Selection</h2>
+<p class="affiliation">Metropolitan Electrical Division, Irrigation &amp; Waterways Directorate</p>
+<hr class="heavy-rule">
+</header>
+<div id="view-select"><div id="list-container"></div></div>
+<div id="view-form" style="display:none">
+<div id="data-form">
+<fieldset class="form-section"><legend>I. General Information</legend>
+<div class="form-group-inline">
+<div class="form-group"><label>Date of Observation *</label><input type="date" id="f-date" required></div>
+<div class="form-group"><label>Operator / Recorder Name</label><input type="text" id="f-name"></div>
+</div></fieldset>
+<fieldset class="form-section"><legend>II. Pump Operational Metrics</legend><div id="pump-inputs"></div></fieldset>
+<div class="action-row"><span id="save-status" style="color:#666">Live Sync: Ready</span></div>
+</div>
+<div class="recent-section"><hr class="light-rule"><h3>Table 1: Recent Observations</h3><div id="recent-list"></div></div>
+</div>
+</div>
+<script>
+var currentStation='',stations=[];
+window.onload=function(){
+document.getElementById('f-date').value=new Date().toISOString().split('T')[0];
+var n=localStorage.getItem('opName');if(n)document.getElementById('f-name').value=n;
+fetch('/api/locations').then(function(r){return r.json()}).then(function(d){
+stations=d.locations;renderList();
+document.getElementById('loading').style.display='none';
+document.getElementById('nav').style.display='flex';
+document.getElementById('app-container').style.display='block';
+}).catch(function(e){console.error(e);alert('Error loading data')});
+};
+function renderList(){
+var h='';for(var i=0;i<stations.length;i++){var s=stations[i];
+h+='<div class="station-item" onclick="openStation(\\''+s.sheetName+'\\',\\''+s.displayName+'\\')"><h3>'+s.displayName+'</h3><p>Entries: '+s.entriesCount+' / '+s.maxEntries+'</p></div>';
+}document.getElementById('list-container').innerHTML=h;
+}
+function openStation(id,name){
+currentStation=id;
+document.getElementById('header-title').innerText=name;
+document.getElementById('view-select').style.display='none';
+document.getElementById('view-form').style.display='block';
+document.getElementById('back-btn').style.display='inline-block';
+var h='';for(var i=1;i<=5;i++){
+h+='<div class="pump-box"><h4>Pump Unit '+i+'</h4><div class="time-row"><div class="form-group"><label>Start</label><input type="time" id="p'+i+'-start"></div><div class="form-group"><label>Stop</label><input type="time" id="p'+i+'-stop"></div></div></div>';
+}document.getElementById('pump-inputs').innerHTML=h;
+var inputs=document.querySelectorAll('#data-form input');
+for(var j=0;j<inputs.length;j++)inputs[j].addEventListener('input',saveLive);
+document.getElementById('f-date').addEventListener('change',function(){clearForm();loadRecent()});
+loadRecent();
+}
+function clearForm(){for(var i=1;i<=5;i++){document.getElementById('p'+i+'-start').value='';document.getElementById('p'+i+'-stop').value='';}}
+function goBack(){
+document.getElementById('header-title').innerText='Station Selection';
+document.getElementById('view-select').style.display='block';
+document.getElementById('view-form').style.display='none';
+document.getElementById('back-btn').style.display='none';
+}
+var saveTimeout=null;
+function saveLive(){
+clearTimeout(saveTimeout);
+var st=document.getElementById('save-status');if(!st)return;
+st.innerText='Live Sync: Saving...';st.style.color='#d35400';
+saveTimeout=setTimeout(function(){
+var date=document.getElementById('f-date').value;
+var name=document.getElementById('f-name').value;
+if(!date){st.innerText='Date required';st.style.color='red';return}
+var pumps={},hasData=false;
+for(var i=1;i<=5;i++){var a=document.getElementById('p'+i+'-start').value,b=document.getElementById('p'+i+'-stop').value;if(a||b){hasData=true;pumps[i]={start:a,stop:b}}}
+if(!hasData){st.innerText='Live Sync: Ready';st.style.color='#666';return}
+localStorage.setItem('opName',name);
+fetch('/api/entry',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sheetName:currentStation,date:date,pumps:pumps,operatorName:name})})
+.then(function(r){return r.json()}).then(function(d){
+if(d.success){st.innerText='Saved \\u2713';st.style.color='green';loadRecent()}
+else{st.innerText='Error: '+(d.error||'Failed');st.style.color='red'}
+}).catch(function(){st.innerText='Network error';st.style.color='red'});
+},1000);
+}
+function loadRecent(){
+fetch('/api/recent/'+currentStation+'?limit=5').then(function(r){return r.json()}).then(function(d){
+var h='';
+if(!d.entries||d.entries.length===0){h='<p style="text-align:center;font-style:italic">No data yet.</p>'}
+else{h='<table class="academic-table"><thead><tr><th>Date</th><th>Operator</th><th>P1</th><th>P2</th><th>P3</th><th>P4</th><th>P5</th></tr></thead><tbody>';
+for(var i=0;i<d.entries.length;i++){var row=d.entries[i];h+='<tr><td><strong>'+row.date+'</strong></td><td>'+(row.operator||'\\u2014')+'</td>';
+for(var p=1;p<=5;p++){var pm=row.pumps[p];h+='<td>'+((pm&&(pm.start||pm.stop))?((pm.start||'-')+' \\u2192 '+(pm.stop||'-')):'\\u2014')+'</td>'}
+h+='</tr>'}h+='</tbody></table>'}
+document.getElementById('recent-list').innerHTML=h;
+var cd=document.getElementById('f-date').value;
+var td=d.entries&&d.entries.find(function(e){return e.date===cd});
+var empty=true;for(var i=1;i<=5;i++){if(document.getElementById('p'+i+'-start').value||document.getElementById('p'+i+'-stop').value){empty=false;break}}
+if(td&&empty){for(var i=1;i<=5;i++){var pp=td.pumps[i];if(pp){if(pp.start)document.getElementById('p'+i+'-start').value=pp.start;if(pp.stop)document.getElementById('p'+i+'-stop').value=pp.stop}}}
+}).catch(function(e){console.log('err',e)});
+}
+</script>
+</body>
+</html>`;
+
 module.exports = app;

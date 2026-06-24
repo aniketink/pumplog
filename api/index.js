@@ -1,22 +1,31 @@
 const express = require('express');
 const { google } = require('googleapis');
+const fs = require('fs');
+const path = require('path');
 
 const app = express();
 app.use(express.json());
 
 const SPREADSHEET_ID = '1eTbAZyLJDcHZGo3aKnzC8VWOsL7RyQxEyfHhEau-dAQ';
 
-let auth;
-if (process.env.GOOGLE_CREDENTIALS) {
-  auth = new google.auth.GoogleAuth({
-    credentials: JSON.parse(process.env.GOOGLE_CREDENTIALS),
-    scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-  });
-} else {
-  auth = new google.auth.GoogleAuth({
-    keyFile: 'google-credentials.json',
-    scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-  });
+function getAuth() {
+  try {
+    if (process.env.GOOGLE_CREDENTIALS) {
+      const creds = JSON.parse(process.env.GOOGLE_CREDENTIALS);
+      return new google.auth.GoogleAuth({
+        credentials: creds,
+        scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+      });
+    }
+    // local dev fallback
+    const keyPath = path.join(process.cwd(), 'google-credentials.json');
+    return new google.auth.GoogleAuth({
+      keyFile: keyPath,
+      scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+    });
+  } catch (e) {
+    throw new Error('Auth failed: ' + e.message);
+  }
 }
 
 const SHEETS = {
@@ -68,7 +77,7 @@ function fractionToTimeStr(frac) {
 
 app.get('/api/locations', async (req, res) => {
   try {
-    const sheetsAPI = google.sheets({ version: 'v4', auth });
+    const sheetsAPI = google.sheets({ version: 'v4', auth: getAuth() });
     let list = [];
     const ranges = Object.keys(SHEETS).map(key => `${key}!B${SHEETS[key].start}:B${SHEETS[key].end}`);
     const response = await sheetsAPI.spreadsheets.values.batchGet({
@@ -100,7 +109,7 @@ app.get('/api/locations', async (req, res) => {
 
 app.post('/api/entry', async (req, res) => {
   try {
-    const sheetsAPI = google.sheets({ version: 'v4', auth });
+    const sheetsAPI = google.sheets({ version: 'v4', auth: getAuth() });
     let { sheetName, date, pumps, operatorName } = req.body;
     if (!sheetName || !date) return res.status(400).json({ error: 'Missing data' });
     let config = SHEETS[sheetName];
@@ -164,7 +173,7 @@ app.post('/api/entry', async (req, res) => {
 
 app.get('/api/recent/:sheet', async (req, res) => {
   try {
-    const sheetsAPI = google.sheets({ version: 'v4', auth });
+    const sheetsAPI = google.sheets({ version: 'v4', auth: getAuth() });
     let config = SHEETS[req.params.sheet];
     const response = await sheetsAPI.spreadsheets.values.get({
       spreadsheetId: SPREADSHEET_ID,

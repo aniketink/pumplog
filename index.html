@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>Pump Log Sheet - MED Portal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,20 +11,14 @@
   <style>
     :root {
       --bg-main: #09090b;
-      /* Slate 950 - Pure dark contrast */
       --bg-card: #18181b;
-      /* Slate 900 - Solid surface layer */
       --bg-input: #09090b;
       --text-main: #fafafa;
-      /* High contrast reading text */
       --text-muted: #a1a1aa;
-      /* Secondary details text */
       --accent: #2563eb;
-      /* True Enterprise Blue */
       --accent-hover: #1d4ed8;
       --emerald: #10b981;
       --border-color: #27272a;
-      /* Sharp crisp borders */
       --border-active: #3f3f46;
       --radius-lg: 8px;
       --radius-md: 6px;
@@ -109,7 +103,8 @@
     .nav-actions button {
       background: transparent;
       border: 1px solid var(--border-color);
-      padding: 6px 12px;
+      padding: 8px 14px;
+      /* Optimized for touch */
       cursor: pointer;
       font-size: 0.8rem;
       color: var(--text-main);
@@ -188,6 +183,9 @@
     .login-wrapper {
       max-width: 360px;
       margin: 80px auto 0 auto;
+      padding: 0 16px;
+      /* Prevents overflow on mobile screens */
+      box-sizing: border-box;
     }
 
     .login-card {
@@ -212,7 +210,8 @@
 
     .login-btn {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
+      /* Touch optimized */
       font-size: 0.85rem;
       cursor: pointer;
       background: var(--accent);
@@ -265,11 +264,13 @@
 
     .form-group input {
       width: 100%;
-      padding: 8px 12px;
+      padding: 12px 14px;
+      /* Uniform height adjustments for precise typing */
       border: 1px solid var(--border-color);
       border-radius: var(--radius-md);
       font-family: inherit;
-      font-size: 0.85rem;
+      font-size: 0.95rem;
+      /* Prevents auto-zoom scaling on iOS Safari */
       color: var(--text-main);
       background: var(--bg-input);
       box-sizing: border-box;
@@ -324,7 +325,7 @@
     #save-status {
       font-size: .7rem;
       font-weight: 500;
-      padding: 4px 10px;
+      padding: 6px 12px;
       background: var(--bg-card);
       border: 1px solid var(--border-color);
       border-radius: 4px;
@@ -383,19 +384,27 @@
       color: var(--text-muted);
     }
 
+    .table-responsive-container {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      /* Kinetic scrolling layout for touch surfaces */
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+    }
+
     .academic-table {
       width: 100%;
       border-collapse: collapse;
       font-size: .8rem;
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
     }
 
     .academic-table th,
     .academic-table td {
-      padding: 10px 14px;
+      padding: 12px 14px;
       text-align: left;
+      white-space: nowrap;
+      /* Prevents text fragmentation during scaling */
     }
 
     .academic-table th {
@@ -417,20 +426,55 @@
       border-bottom: none;
     }
 
+    /* Comprehensive Media Ruleset for Handheld Screens */
     @media(max-width:768px) {
+      .top-bar {
+        padding: 12px 16px;
+      }
+
+      .top-bar-brand {
+        font-size: 0.8rem;
+      }
+
+      .nav-actions button {
+        padding: 6px 10px;
+        font-size: 0.75rem;
+      }
+
       .container {
         padding: 24px 16px;
       }
 
+      .academic-header {
+        margin-bottom: 24px;
+      }
+
+      .academic-header h1 {
+        font-size: 1.25rem;
+      }
+
+      .academic-header h2 {
+        font-size: 0.9rem;
+      }
+
+      .form-section {
+        padding: 16px;
+        margin: 16px 0;
+      }
+
       .pump-box {
         grid-template-columns: 1fr;
+        gap: 10px;
+        padding: 12px;
+      }
+
+      .time-row {
         gap: 12px;
       }
 
-      .academic-table {
-        display: block;
-        overflow-x: auto;
-        white-space: nowrap;
+      .station-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
       }
     }
   </style>
@@ -446,7 +490,7 @@
     <div class="top-bar-brand">MED Portal</div>
     <div class="nav-actions">
       <button id="back-btn" onclick="goBack()" style="display:none">&larr; Stations</button>
-      <button id="download-btn" onclick="downloadExcel()" style="display:none">Export Log (.xlsx)</button>
+      <button id="download-btn" onclick="downloadExcel()" style="display:none">Export</button>
       <button id="logout-btn" onclick="logout()" style="display:none">Sign Out</button>
     </div>
   </div>
@@ -496,7 +540,7 @@
           </div>
         </fieldset>
         <fieldset class="form-section">
-          <legend>Pump Runtime Registry (24-Hour Metric)</legend>
+          <legend>Pump Runtime Registry</legend>
           <div id="pump-inputs"></div>
         </fieldset>
         <div class="action-row"><span id="save-status">Live Sync: Standing By</span></div>
@@ -504,7 +548,7 @@
       <div class="recent-section">
         <hr class="light-rule">
         <h3>Station Log Audit History</h3>
-        <div id="recent-list"></div>
+        <div class="table-responsive-container" id="recent-list"></div>
       </div>
     </div>
   </div>
@@ -673,7 +717,7 @@
         .then(function (d) {
           var h = '';
           if (!d.entries || d.entries.length === 0) {
-            h = '<p style="text-align:center;font-style:italic;color:#a1a1aa">No observations recorded yet.</p>';
+            h = '<p style="text-align:center;font-style:italic;color:#a1a1aa;padding:20px 0;">No observations recorded yet.</p>';
           } else {
             h = '<table class="academic-table"><thead><tr><th>Date</th><th>Operator</th><th>P1</th><th>P2</th><th>P3</th><th>P4</th><th>P5</th></tr></thead><tbody>';
             for (var i = 0; i < d.entries.length; i++) {

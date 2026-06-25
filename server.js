@@ -19,11 +19,15 @@ const locationsHandler = require('./api/locations');
 const entryHandler = require('./api/entry');
 const recentHandler = require('./api/recent');
 const downloadHandler = require('./api/download');
+const statsHandler = require('./api/stats');
+const loginHandler = require('./api/login');
 
 app.get('/api/locations', locationsHandler);
 app.post('/api/entry', entryHandler);
 app.get('/api/recent', recentHandler);
 app.get('/api/download', downloadHandler);
+app.get('/api/stats', statsHandler);
+app.post('/api/login', loginHandler);
 
 if (process.env.NODE_ENV !== 'production') {
   app.listen(3000, () => {

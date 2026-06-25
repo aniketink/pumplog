@@ -44,6 +44,13 @@ const AGENCIES = {
       'Sheet1': { name: 'Laketown', start: 13, end: 118 },
     }
   },
+  'gdenterprise': {
+    pass: 'gdenterprise123',
+    spreadsheetId: '1ltkbkoVHaAg7vOUnWj5y7RS1r9k4J4UOyePgPuK3ANs',
+    sheets: {
+      'Sheet1': { name: 'Bankra Domjore', start: 13, end: 118 },
+    }
+  },
   'admin': {
     pass: 'admin123',
     isAdmin: true

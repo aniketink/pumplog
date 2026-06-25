@@ -19,6 +19,17 @@ function calculateHours(startStr, stopStr) {
   return diff / 60;
 }
 
+const GD_ENTERPRISE_COLS = {
+  1: { start: 2, stop: 3, hours: 4 },
+  2: { start: 5, stop: 6, hours: 7 },
+  3: { start: 8, stop: 9, hours: 10 },
+  4: { start: 11, stop: 12, hours: 13 },
+  5: { start: 14, stop: 15, hours: 16 },
+  6: { start: 17, stop: 18, hours: 19 },
+  7: { start: 20, stop: 21, hours: 22 },
+  8: { start: 23, stop: 24, hours: 25 },
+};
+
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', 'Authorization');
@@ -31,7 +42,7 @@ module.exports = async (req, res) => {
     const sheetsAPI = google.sheets({ version: 'v4', auth: getAuth() });
     
     const kolkataAgencies = ['sas', 'geebee'];
-    const howrahAgencies = ['tecnico'];
+    const howrahAgencies = ['tecnico', 'gdenterprise'];
 
     async function fetchAgencyData(agencyKeys) {
       const allData = [];
@@ -46,24 +57,42 @@ module.exports = async (req, res) => {
           try {
             const response = await sheetsAPI.spreadsheets.values.get({
               spreadsheetId: agency.spreadsheetId,
-              range: `${sheetKey}!A${config.start}:S${config.end}`,
+              range: `${sheetKey}!A${config.start}:Z${config.end}`,
               valueRenderOption: 'UNFORMATTED_VALUE',
               dateTimeRenderOption: 'SERIAL_NUMBER'
             });
             
             const rows = response.data.values || [];
+            const isGdEnterprise = agencyKey === 'gdenterprise';
+            const pumpCount = isGdEnterprise ? 8 : 5;
+            const colMap = isGdEnterprise ? GD_ENTERPRISE_COLS : COLS_INDEX;
+            
             for (const r of rows) {
               if (!r || !r[1] || r[1] === '') continue;
               const date = serialToDateStr(r[1]);
               let dayHours = 0;
               let workingPumps = 0;
               
-              for (let p = 1; p <= 5; p++) {
-                const start = fractionToTimeStr(r[COLS_INDEX[p].start]);
-                const stop = fractionToTimeStr(r[COLS_INDEX[p].stop]);
-                if (start || stop) {
-                  workingPumps++;
-                  dayHours += calculateHours(start, stop);
+              for (let p = 1; p <= pumpCount; p++) {
+                let start, stop;
+                if (isGdEnterprise) {
+                  start = fractionToTimeStr(r[colMap[p].start]);
+                  stop = fractionToTimeStr(r[colMap[p].stop]);
+                  const hoursVal = r[colMap[p].hours];
+                  if ((start || stop) && (!hoursVal || hoursVal === 0)) {
+                    workingPumps++;
+                    dayHours += calculateHours(start, stop);
+                  } else if (hoursVal && hoursVal > 0) {
+                    workingPumps++;
+                    dayHours += hoursVal;
+                  }
+                } else {
+                  start = fractionToTimeStr(r[colMap[p].start]);
+                  stop = fractionToTimeStr(r[colMap[p].stop]);
+                  if (start || stop) {
+                    workingPumps++;
+                    dayHours += calculateHours(start, stop);
+                  }
                 }
               }
               

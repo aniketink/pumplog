@@ -917,6 +917,64 @@
       .table-tabs { overflow-x: auto; flex-wrap: nowrap; }
       .data-table { min-width: 500px; }
     }
+
+    .sop-container {
+      margin-bottom: 24px;
+    }
+    .sop-details {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+    .sop-summary {
+      padding: 16px 20px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--navy);
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background 0.2s;
+    }
+    .sop-summary:hover {
+      background: var(--surface-alt);
+    }
+    .sop-summary::-webkit-details-marker {
+      display: none;
+    }
+    .sop-summary::after {
+      content: '+';
+      font-size: 1.5rem;
+      line-height: 1;
+      font-weight: 400;
+      color: var(--ink-500);
+    }
+    .sop-details[open] .sop-summary::after {
+      content: '−';
+    }
+    .sop-gallery {
+      padding: 24px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      max-height: 70vh;
+      overflow-y: auto;
+      background: var(--surface-sunken);
+    }
+    .sop-gallery img {
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto;
+      display: block;
+      border-radius: var(--radius-md);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      background: #fff;
+    }
     </style>
 </head>
 
@@ -996,6 +1054,36 @@
     </header>
 
     <div id="view-select" style="display:none">
+      <div class="sop-container">
+        <details class="sop-details">
+          <summary class="sop-summary">
+            View Temporary Pump SOP (21 Pages)
+          </summary>
+          <div class="sop-gallery">
+            <img src="/sop-images/SOP%20FOR%20TEMPORARY%20PUMP_MED_2026_page-0001.jpg" alt="SOP Page 1" loading="lazy">
+            <img src="/sop-images/SOP%20FOR%20TEMPORARY%20PUMP_MED_2026_page-0002.jpg" alt="SOP Page 2" loading="lazy">
+            <img src="/sop-images/SOP%20FOR%20TEMPORARY%20PUMP_MED_2026_page-0003.jpg" alt="SOP Page 3" loading="lazy">
+            <img src="/sop-images/SOP%20FOR%20TEMPORARY%20PUMP_MED_2026_page-0004.jpg" alt="SOP Page 4" loading="lazy">
+            <img src="/sop-images/SOP%20FOR%20TEMPORARY%20PUMP_MED_2026_page-0005.jpg" alt="SOP Page 5" loading="lazy">
+            <img src="/sop-images/SOP%20FOR%20TEMPORARY%20PUMP_MED_2026_page-0006.jpg" alt="SOP Page 6" loading="lazy">
+            <img src="/sop-images/SOP%20FOR%20TEMPORARY%20PUMP_MED_2026_page-0007.jpg" alt="SOP Page 7" loading="lazy">
+            <img src="/sop-images/SOP%20FOR%20TEMPORARY%20PUMP_MED_2026_page-0008.jpg" alt="SOP Page 8" loading="lazy">
+            <img src="/sop-images/SOP%20FOR%20TEMPORARY%20PUMP_MED_2026_page-0009.jpg" alt="SOP Page 9" loading="lazy">
+            <img src="/sop-images/SOP%20FOR%20TEMPORARY%20PUMP_MED_2026_page-0010.jpg" alt="SOP Page 10" loading="lazy">
+            <img src="/sop-images/SOP%20FOR%20TEMPORARY%20PUMP_MED_2026_page-0011.jpg" alt="SOP Page 11" loading="lazy">
+            <img src="/sop-images/SOP%20FOR%20TEMPORARY%20PUMP_MED_2026_page-0012.jpg" alt="SOP Page 12" loading="lazy">
+            <img src="/sop-images/SOP%20FOR%20TEMPORARY%20PUMP_MED_2026_page-0013.jpg" alt="SOP Page 13" loading="lazy">
+            <img src="/sop-images/SOP%20FOR%20TEMPORARY%20PUMP_MED_2026_page-0014.jpg" alt="SOP Page 14" loading="lazy">
+            <img src="/sop-images/SOP%20FOR%20TEMPORARY%20PUMP_MED_2026_page-0015.jpg" alt="SOP Page 15" loading="lazy">
+            <img src="/sop-images/SOP%20FOR%20TEMPORARY%20PUMP_MED_2026_page-0016.jpg" alt="SOP Page 16" loading="lazy">
+            <img src="/sop-images/SOP%20FOR%20TEMPORARY%20PUMP_MED_2026_page-0017.jpg" alt="SOP Page 17" loading="lazy">
+            <img src="/sop-images/SOP%20FOR%20TEMPORARY%20PUMP_MED_2026_page-0018.jpg" alt="SOP Page 18" loading="lazy">
+            <img src="/sop-images/SOP%20FOR%20TEMPORARY%20PUMP_MED_2026_page-0019.jpg" alt="SOP Page 19" loading="lazy">
+            <img src="/sop-images/SOP%20FOR%20TEMPORARY%20PUMP_MED_2026_page-0020.jpg" alt="SOP Page 20" loading="lazy">
+            <img src="/sop-images/SOP%20FOR%20TEMPORARY%20PUMP_MED_2026_page-0021.jpg" alt="SOP Page 21" loading="lazy">
+          </div>
+        </details>
+      </div>
       <div id="list-container"></div>
     </div>
 

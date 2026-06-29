@@ -48,7 +48,9 @@ const AGENCIES = {
     pass: 'gdenterprise123',
     spreadsheetId: '1ltkbkoVHaAg7vOUnWj5y7RS1r9k4J4UOyePgPuK3ANs',
     sheets: {
-      'Sheet1': { name: 'Bankra Domjore', start: 13, end: 118 },
+      'Piyadapara': { name: 'Piyadapara', start: 13, end: 118 },
+      'Fakir para': { name: 'Fakir para', start: 13, end: 118 },
+      'Sardarparajola': { name: 'Sardarparajola', start: 13, end: 118 },
     }
   },
   'admin': {

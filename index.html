@@ -774,146 +774,159 @@
     /* Dashboard Styles */
     .dashboard-header {
       text-align: center;
-      margin-bottom: 24px;
-      padding: 16px 0 8px;
+      margin-bottom: 20px;
+      padding: 12px 0 4px;
     }
     .dashboard-header h2 {
       font-family: var(--font-display);
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       color: var(--navy-darker);
-      margin: 0 0 4px;
+      margin: 0 0 2px;
     }
     .dashboard-subtitle {
       color: var(--ink-500);
-      font-size: 0.9rem;
+      font-size: 0.78rem;
       margin: 0;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
-    .stats-grid {
+    .hero-metrics {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
       margin-bottom: 24px;
     }
-    .stat-card {
+    .hero-card {
       background: var(--surface);
       border: 1px solid var(--line);
       border-radius: var(--radius-lg);
       padding: 20px;
       display: flex;
+      align-items: center;
       gap: 16px;
       box-shadow: var(--shadow-sm);
       transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
-    .stat-card:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-md);
+    .hero-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .hero-total { border-left: 4px solid var(--navy); }
+    .hero-active { border-left: 4px solid var(--success); }
+    .hero-hours { border-left: 4px solid var(--gold); }
+    .hero-icon { color: var(--ink-300); flex-shrink: 0; }
+    .hero-total .hero-icon { color: var(--navy); }
+    .hero-active .hero-icon { color: var(--success); }
+    .hero-hours .hero-icon { color: var(--gold); }
+    .hero-body { display: flex; flex-direction: column; }
+    .hero-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-500); font-weight: 600; }
+    .hero-value { font-family: var(--font-mono); font-size: 1.8rem; font-weight: 700; color: var(--ink-900); line-height: 1.2; }
+
+    .region-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+      gap: 20px;
+      margin-bottom: 20px;
     }
-    .stat-icon {
-      font-size: 2.5rem;
-      line-height: 1;
+    .region-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
     }
-    .stat-content h3 {
-      margin: 0 0 12px;
+    .region-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .region-header h3 {
+      margin: 0;
       font-size: 1rem;
       font-weight: 700;
       color: var(--ink-900);
     }
-    .kolkata-card .stat-content h3 { color: var(--navy); }
-    .howrah-card .stat-content h3 { color: var(--maroon); }
-    .stat-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 6px 0;
-      border-bottom: 1px solid var(--line);
+    .region-badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 3px 9px;
+      border-radius: 30px;
     }
-    .stat-row:last-child { border-bottom: none; }
-    .stat-label { font-size: 0.8rem; color: var(--ink-500); }
-    .stat-value { font-family: var(--font-mono); font-size: 0.9rem; font-weight: 700; color: var(--ink-900); }
+    .kolkata-badge { background: #e0f2fe; color: #0369a1; }
+    .howrah-badge { background: #fce7f3; color: #be185d; }
 
-    .chart-section {
+    .region-metrics {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-      gap: 20px;
-      margin-bottom: 24px;
-    }
-    .chart-card {
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: var(--radius-lg);
-      padding: 20px;
-      box-shadow: var(--shadow-sm);
-    }
-    .chart-card h3 {
-      margin: 0 0 16px;
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: var(--ink-700);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-    .chart-container {
-      position: relative;
-      height: 280px;
-    }
-
-    .table-section {
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: var(--radius-lg);
-      padding: 20px;
-      box-shadow: var(--shadow-sm);
-    }
-    .table-section h3 {
-      margin: 0 0 16px;
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: var(--ink-700);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-    .table-tabs {
-      display: flex;
+      grid-template-columns: repeat(5, 1fr);
       gap: 8px;
-      margin-bottom: 16px;
-      border-bottom: 2px solid var(--line);
-      padding-bottom: 8px;
+      margin-bottom: 14px;
     }
-    .tab-btn {
-      background: none;
-      border: none;
-      padding: 8px 16px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--ink-500);
-      cursor: pointer;
+    .rm-item {
+      text-align: center;
+      padding: 8px 4px;
+      background: var(--surface-alt);
       border-radius: var(--radius-md);
-      transition: all 0.15s ease;
     }
-    .tab-btn:hover { background: var(--surface-alt); color: var(--ink-900); }
-    .tab-btn.active {
-      background: var(--navy);
-      color: #fff;
-    }
-    .tab-btn.active:hover { background: var(--navy-dark); }
+    .rm-label { display: block; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-500); font-weight: 600; }
+    .rm-value { display: block; font-family: var(--font-mono); font-size: 1rem; font-weight: 700; color: var(--ink-900); margin-top: 2px; }
 
-    .table-wrapper { overflow-x: auto; }
-    .data-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
-    .data-table th, .data-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--line); }
-    .data-table th { font-weight: 700; color: var(--ink-700); background: var(--surface-alt); position: sticky; top: 0; }
-    .data-table td { color: var(--ink-900); }
-    .data-table tbody tr:hover { background: var(--surface-alt); }
-    .data-table .cumulative { font-family: var(--font-mono); font-weight: 700; color: var(--navy); }
-    .data-table .howrah .cumulative { color: var(--maroon); }
-    .data-table .hours { font-family: var(--font-mono); font-weight: 600; }
-    .data-table .pumps { text-align: center; font-weight: 600; }
-    .data-table .stations { text-align: center; color: var(--ink-500); }
+    .region-chart-row {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .mini-chart {
+      position: relative;
+      height: 120px;
+      background: var(--surface-alt);
+      border-radius: var(--radius-md);
+      padding: 4px;
+    }
+
+    .station-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .station-chip {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 30px;
+      background: var(--surface-alt);
+      border: 1px solid var(--line);
+      color: var(--ink-700);
+    }
+    .station-chip.used { background: var(--success-bg); border-color: var(--success); color: var(--success); }
+    .station-chip.unused { color: var(--ink-300); }
+
+    .wide-chart-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+    .wide-chart-card h3 {
+      margin: 0 0 14px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--ink-700);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
 
     /* Mobile Dashboard */
     @media (max-width: 768px) {
-      .stats-grid { grid-template-columns: 1fr; }
-      .chart-section { grid-template-columns: 1fr; }
-      .chart-container { height: 240px; }
+      .hero-metrics { grid-template-columns: 1fr; }
+      .region-grid { grid-template-columns: 1fr; }
+      .region-metrics { grid-template-columns: repeat(3, 1fr); }
+      .region-chart-row { grid-template-columns: 1fr; }
+      .mini-chart { height: 100px; }
+      .wide-chart-card .chart-container { height: 240px !important; }
       .table-tabs { overflow-x: auto; flex-wrap: nowrap; }
       .data-table { min-width: 500px; }
     }
@@ -1111,72 +1124,113 @@
     <div id="view-dashboard" style="display:none">
       <div class="dashboard-header">
         <h2>Operational Analytics Dashboard</h2>
-        <p class="dashboard-subtitle">Cumulative Working Hours & Pump Utilization</p>
+        <p class="dashboard-subtitle">Metropolitan Electrical Division &middot; Temporary Pump Monitoring</p>
       </div>
-      
-      <div class="stats-grid" id="stats-summary">
-        <div class="stat-card kolkata-card">
-          <div class="stat-icon">🏙️</div>
-          <div class="stat-content">
-            <h3>Kolkata &amp; Adjoining Areas</h3>
-            <div class="stat-row">
-              <span class="stat-label">Total Hours</span>
-              <span class="stat-value" id="kolkata-total-hours">—</span>
-            </div>
-            <div class="stat-row">
-              <span class="stat-label">Avg Pumps/Day</span>
-              <span class="stat-value" id="kolkata-avg-pumps">—</span>
-            </div>
-            <div class="stat-row">
-              <span class="stat-label">Active Days</span>
-              <span class="stat-value" id="kolkata-total-days">—</span>
-            </div>
+
+      <div class="hero-metrics">
+        <div class="hero-card hero-total">
+          <div class="hero-icon">
+            <svg viewBox="0 0 48 48" width="40" height="40" fill="none"><circle cx="24" cy="24" r="20" stroke="currentColor" stroke-width="2"/><path d="M16 28l4-8 4 4 4-8 4 4 4-8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="hero-body">
+            <span class="hero-label">Total Pumps Installed</span>
+            <span class="hero-value" id="hero-total-installed">—</span>
           </div>
         </div>
-        <div class="stat-card howrah-card">
-          <div class="stat-icon">🏭</div>
-          <div class="stat-content">
-            <h3>Howrah</h3>
-            <div class="stat-row">
-              <span class="stat-label">Total Hours</span>
-              <span class="stat-value" id="howrah-total-hours">—</span>
-            </div>
-            <div class="stat-row">
-              <span class="stat-label">Avg Pumps/Day</span>
-              <span class="stat-value" id="howrah-avg-pumps">—</span>
-            </div>
-            <div class="stat-row">
-              <span class="stat-label">Active Days</span>
-              <span class="stat-value" id="howrah-total-days">—</span>
-            </div>
+        <div class="hero-card hero-active">
+          <div class="hero-icon">
+            <svg viewBox="0 0 48 48" width="40" height="40" fill="none"><circle cx="24" cy="24" r="20" stroke="currentColor" stroke-width="2"/><path d="M20 24l4 4 8-8" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="hero-body">
+            <span class="hero-label">Pumps in Operation</span>
+            <span class="hero-value" id="hero-in-operation">—</span>
+          </div>
+        </div>
+        <div class="hero-card hero-hours">
+          <div class="hero-icon">
+            <svg viewBox="0 0 48 48" width="40" height="40" fill="none"><circle cx="24" cy="24" r="20" stroke="currentColor" stroke-width="2"/><path d="M24 12v12l8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </div>
+          <div class="hero-body">
+            <span class="hero-label">Cumulative Hours</span>
+            <span class="hero-value" id="hero-total-hours">—</span>
           </div>
         </div>
       </div>
 
-      <div class="chart-section">
-        <div class="chart-card">
-          <h3>Kolkata &amp; Adjoining — Cumulative Working Hours</h3>
-          <div class="chart-container">
-            <canvas id="kolkata-hours-chart"></canvas>
+      <div class="region-grid">
+        <div class="region-card">
+          <div class="region-header">
+            <h3>Kolkata &amp; Adjoining Areas</h3>
+            <span class="region-badge kolkata-badge">SAS · Geebee</span>
           </div>
+          <div class="region-metrics">
+            <div class="rm-item">
+              <span class="rm-label">Installed</span>
+              <span class="rm-value" id="kolkata-installed">—</span>
+            </div>
+            <div class="rm-item">
+              <span class="rm-label">In Operation</span>
+              <span class="rm-value" id="kolkata-in-operation">—</span>
+            </div>
+            <div class="rm-item">
+              <span class="rm-label">Total Hours</span>
+              <span class="rm-value" id="kolkata-total-hours">—</span>
+            </div>
+            <div class="rm-item">
+              <span class="rm-label">Avg Pumps/Day</span>
+              <span class="rm-value" id="kolkata-avg-pumps">—</span>
+            </div>
+            <div class="rm-item">
+              <span class="rm-label">Active Days</span>
+              <span class="rm-value" id="kolkata-total-days">—</span>
+            </div>
+          </div>
+          <div class="region-chart-row">
+            <div class="mini-chart"><canvas id="kolkata-donut"></canvas></div>
+            <div class="mini-chart"><canvas id="kolkata-hours-chart"></canvas></div>
+          </div>
+          <div class="station-list" id="kolkata-stations"></div>
         </div>
-        <div class="chart-card">
-          <h3>Kolkata &amp; Adjoining — Working Pumps per Day</h3>
-          <div class="chart-container">
-            <canvas id="kolkata-pumps-chart"></canvas>
+
+        <div class="region-card">
+          <div class="region-header">
+            <h3>Howrah</h3>
+            <span class="region-badge howrah-badge">Tecnico · GD Enterprise</span>
           </div>
+          <div class="region-metrics">
+            <div class="rm-item">
+              <span class="rm-label">Installed</span>
+              <span class="rm-value" id="howrah-installed">—</span>
+            </div>
+            <div class="rm-item">
+              <span class="rm-label">In Operation</span>
+              <span class="rm-value" id="howrah-in-operation">—</span>
+            </div>
+            <div class="rm-item">
+              <span class="rm-label">Total Hours</span>
+              <span class="rm-value" id="howrah-total-hours">—</span>
+            </div>
+            <div class="rm-item">
+              <span class="rm-label">Avg Pumps/Day</span>
+              <span class="rm-value" id="howrah-avg-pumps">—</span>
+            </div>
+            <div class="rm-item">
+              <span class="rm-label">Active Days</span>
+              <span class="rm-value" id="howrah-total-days">—</span>
+            </div>
+          </div>
+          <div class="region-chart-row">
+            <div class="mini-chart"><canvas id="howrah-donut"></canvas></div>
+            <div class="mini-chart"><canvas id="howrah-hours-chart"></canvas></div>
+          </div>
+          <div class="station-list" id="howrah-stations"></div>
         </div>
-        <div class="chart-card">
-          <h3>Howrah — Cumulative Working Hours</h3>
-          <div class="chart-container">
-            <canvas id="howrah-hours-chart"></canvas>
-          </div>
-        </div>
-        <div class="chart-card">
-          <h3>Howrah — Working Pumps per Day</h3>
-          <div class="chart-container">
-            <canvas id="howrah-pumps-chart"></canvas>
-          </div>
+      </div>
+
+      <div class="wide-chart-card">
+        <h3>Cumulative Hours Trend &mdash; All Regions</h3>
+        <div class="chart-container" style="height:320px">
+          <canvas id="combined-hours-chart"></canvas>
         </div>
       </div>
 
@@ -1568,75 +1622,161 @@
       fetch('/api/stats', { headers: getAuthHeader() })
         .then(function (r) { return r.json(); })
         .then(function (d) {
-          if (d.kolkata) {
-            document.getElementById('kolkata-total-hours').textContent = d.kolkata.summary.totalHours + ' hrs';
-            document.getElementById('kolkata-avg-pumps').textContent = d.kolkata.summary.avgPumpsPerDay;
-            document.getElementById('kolkata-total-days').textContent = d.kolkata.summary.totalDays;
-            renderChart('kolkata-hours-chart', d.kolkata.daily, 'date', 'cumulativeHours', '#0b3d6e', 'Cumulative Hours');
-            renderChart('kolkata-pumps-chart', d.kolkata.daily, 'date', 'workingPumps', '#0f6e6e', 'Working Pumps');
-            renderTable('kolkata-table-body', d.kolkata.daily, 'kolkata');
+          // Hero metrics
+          if (d.overall) {
+            document.getElementById('hero-total-installed').textContent = d.overall.totalInstalled || 0;
+            document.getElementById('hero-in-operation').textContent = d.overall.totalInOperation || 0;
+            document.getElementById('hero-total-hours').textContent = (d.overall.totalHours || '0') + ' hrs';
           }
-          if (d.howrah) {
-            document.getElementById('howrah-total-hours').textContent = d.howrah.summary.totalHours + ' hrs';
-            document.getElementById('howrah-avg-pumps').textContent = d.howrah.summary.avgPumpsPerDay;
-            document.getElementById('howrah-total-days').textContent = d.howrah.summary.totalDays;
-            renderChart('howrah-hours-chart', d.howrah.daily, 'date', 'cumulativeHours', '#8a1f2b', 'Cumulative Hours');
-            renderChart('howrah-pumps-chart', d.howrah.daily, 'date', 'workingPumps', '#b45309', 'Working Pumps');
-            renderTable('howrah-table-body', d.howrah.daily, 'howrah');
-          }
+          // Kolkata
+          populateRegion(d.kolkata, 'kolkata', '#0b3d6e', '#0369a1');
+          // Howrah
+          populateRegion(d.howrah, 'howrah', '#8a1f2b', '#be185d');
+          // Combined chart
+          renderCombinedChart(d.kolkata, d.howrah);
+          // Tables
+          if (d.kolkata) renderTable('kolkata-table-body', d.kolkata.daily, 'kolkata');
+          if (d.howrah) renderTable('howrah-table-body', d.howrah.daily, 'howrah');
         })
         .catch(function (e) { console.error('Dashboard load error:', e); });
     }
 
-    function renderChart(canvasId, data, labelKey, valueKey, color, label) {
+    function populateRegion(data, prefix, color, badgeColor) {
+      if (!data) return;
+      var s = data.summary;
+      document.getElementById(prefix + '-installed').textContent = s.totalInstalled || 0;
+      document.getElementById(prefix + '-in-operation').textContent = s.totalInOperation || 0;
+      document.getElementById(prefix + '-total-hours').textContent = (s.totalHours || '0') + ' hrs';
+      document.getElementById(prefix + '-avg-pumps').textContent = s.avgPumpsPerDay || 0;
+      document.getElementById(prefix + '-total-days').textContent = s.totalDays || 0;
+
+      // Donut: installed vs in-operation
+      renderDonut(prefix + '-donut', s.totalInstalled || 0, s.totalInOperation || 0, color);
+
+      // Mini hours chart
+      if (data.daily && data.daily.length) {
+        renderMiniChart(prefix + '-hours-chart', data.daily, color);
+      }
+
+      // Station chips
+      var list = document.getElementById(prefix + '-stations');
+      list.innerHTML = '';
+      if (data.stationStats && data.stationStats.length) {
+        data.stationStats.forEach(function (st) {
+          var chip = document.createElement('span');
+          chip.className = 'station-chip' + (st.maxPumps > 0 ? ' used' : ' unused');
+          chip.textContent = st.name;
+          list.appendChild(chip);
+        });
+      }
+    }
+
+    function renderDonut(canvasId, total, used, color) {
       var ctx = document.getElementById(canvasId).getContext('2d');
-      var existingChart = window[canvasId + 'Chart'];
-      if (existingChart) existingChart.destroy();
-
-      var labels = data.map(function (d) { return d[labelKey]; });
-      var values = data.map(function (d) { return d[valueKey]; });
-
-      var chart = new Chart(ctx, {
-        type: 'line',
+      var key = canvasId + 'Chart';
+      if (window[key]) window[key].destroy();
+      window[key] = new Chart(ctx, {
+        type: 'doughnut',
         data: {
-          labels: labels,
+          labels: ['In Operation', 'Idle'],
           datasets: [{
-            label: label,
-            data: values,
-            borderColor: color,
-            backgroundColor: color + '33',
-            fill: true,
-            tension: 0.3,
-            pointRadius: 4,
-            pointHoverRadius: 6,
-            borderWidth: 2
+            data: [Math.min(used, total), Math.max(0, total - used)],
+            backgroundColor: [color, '#eef2f6'],
+            borderWidth: 0
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          cutout: '70%',
           plugins: {
             legend: { display: false },
             tooltip: {
-              backgroundColor: 'rgba(16, 42, 67, 0.9)',
-              titleFont: { family: 'Inter', size: 12 },
+              backgroundColor: 'rgba(16,42,67,0.9)',
+              bodyFont: { family: 'Inter', size: 10 },
+              padding: 8
+            }
+          }
+        }
+      });
+    }
+
+    function renderMiniChart(canvasId, data, color) {
+      var ctx = document.getElementById(canvasId).getContext('2d');
+      var key = canvasId + 'Chart';
+      if (window[key]) window[key].destroy();
+      window[key] = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: data.map(function (d) { return d.date; }),
+          datasets: [{
+            data: data.map(function (d) { return d.dailyHours; }),
+            backgroundColor: color + '66',
+            borderColor: color,
+            borderWidth: 1,
+            borderRadius: 3
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false }, tooltip: { enabled: false } },
+          scales: {
+            x: { display: false },
+            y: { display: false, beginAtZero: true }
+          }
+        }
+      });
+    }
+
+    function renderCombinedChart(kolkata, howrah) {
+      var canvasId = 'combined-hours-chart';
+      var ctx = document.getElementById(canvasId).getContext('2d');
+      var key = canvasId + 'Chart';
+      if (window[key]) window[key].destroy();
+
+      var allDates = [];
+      var kMap = {}, hMap = {};
+      if (kolkata && kolkata.daily) kolkata.daily.forEach(function (d) { allDates.push(d.date); kMap[d.date] = d.cumulativeHours; });
+      if (howrah && howrah.daily) howrah.daily.forEach(function (d) { allDates.push(d.date); hMap[d.date] = d.cumulativeHours; });
+      allDates = Array.from(new Set(allDates)).sort();
+
+      var kData = allDates.map(function (dt) { return kMap[dt] || null; });
+      var hData = allDates.map(function (dt) { return hMap[dt] || null; });
+
+      window[key] = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: allDates,
+          datasets: [
+            { label: 'Kolkata & Adjoining', data: kData, borderColor: '#0b3d6e', backgroundColor: '#0b3d6e22', fill: true, tension: 0.3, pointRadius: 3, borderWidth: 2 },
+            { label: 'Howrah', data: hData, borderColor: '#8a1f2b', backgroundColor: '#8a1f2b22', fill: true, tension: 0.3, pointRadius: 3, borderWidth: 2 }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { font: { family: 'Inter', size: 11 }, padding: 16 } },
+            tooltip: {
+              backgroundColor: 'rgba(16,42,67,0.9)',
               bodyFont: { family: 'JetBrains Mono', size: 11 },
               padding: 10,
               cornerRadius: 6
             }
           },
           scales: {
-            x: { grid: { display: false }, ticks: { maxTicksLimit: 10, font: { family: 'Inter', size: 10 } } },
+            x: { grid: { display: false }, ticks: { maxTicksLimit: 8, font: { family: 'Inter', size: 10 } } },
             y: { beginAtZero: true, grid: { color: '#eef2f6' }, ticks: { font: { family: 'JetBrains Mono', size: 10 } } }
           }
         }
       });
-      window[canvasId + 'Chart'] = chart;
     }
 
     function renderTable(tbodyId, data, region) {
       var tbody = document.getElementById(tbodyId);
       tbody.innerHTML = '';
+      if (!data) return;
       data.forEach(function (d) {
         var tr = document.createElement('tr');
         var regionClass = region === 'howrah' ? ' howrah' : '';

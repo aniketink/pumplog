@@ -30,6 +30,13 @@ const GD_ENTERPRISE_COLS = {
   8: { start: 23, stop: 24, hours: 25 },
 };
 
+const AGENCY_PUMP_CONFIG = {
+  sas: { pumpsPerStation: 5 },
+  geebee: { pumpsPerStation: 5 },
+  tecnico: { pumpsPerStation: 5 },
+  gdenterprise: { pumpsPerStation: 8 },
+};
+
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', 'Authorization');
@@ -43,6 +50,18 @@ module.exports = async (req, res) => {
     
     const kolkataAgencies = ['sas', 'geebee'];
     const howrahAgencies = ['tecnico', 'gdenterprise'];
+    const allAgencies = ['sas', 'geebee', 'tecnico', 'gdenterprise'];
+
+    function calcTotalInstalled(agencyKeys) {
+      let total = 0;
+      for (const key of agencyKeys) {
+        const agency = AGENCIES[key];
+        if (!agency) continue;
+        const ppc = AGENCY_PUMP_CONFIG[key].pumpsPerStation;
+        total += Object.keys(agency.sheets).length * ppc;
+      }
+      return total;
+    }
 
     async function fetchAgencyData(agencyKeys) {
       const allData = [];
@@ -72,6 +91,7 @@ module.exports = async (req, res) => {
               const date = serialToDateStr(r[1]);
               let dayHours = 0;
               let workingPumps = 0;
+              const activePumpNums = new Set();
               
               for (let p = 1; p <= pumpCount; p++) {
                 let start, stop;
@@ -81,9 +101,11 @@ module.exports = async (req, res) => {
                   const hoursVal = r[colMap[p].hours];
                   if ((start || stop) && (!hoursVal || hoursVal === 0)) {
                     workingPumps++;
+                    activePumpNums.add(p);
                     dayHours += calculateHours(start, stop);
                   } else if (hoursVal && hoursVal > 0) {
                     workingPumps++;
+                    activePumpNums.add(p);
                     dayHours += hoursVal;
                   }
                 } else {
@@ -91,13 +113,18 @@ module.exports = async (req, res) => {
                   stop = fractionToTimeStr(r[colMap[p].stop]);
                   if (start || stop) {
                     workingPumps++;
+                    activePumpNums.add(p);
                     dayHours += calculateHours(start, stop);
                   }
                 }
               }
               
               if (workingPumps > 0 || dayHours > 0) {
-                allData.push({ date, hours: dayHours, pumps: workingPumps, station: agency.sheets[sheetKey].name, agency: agencyKey });
+                allData.push({
+                  date, hours: dayHours, pumps: workingPumps,
+                  station: agency.sheets[sheetKey].name, agency: agencyKey,
+                  activePumps: Array.from(activePumpNums)
+                });
               }
             }
           } catch (err) {
@@ -108,8 +135,52 @@ module.exports = async (req, res) => {
       return allData;
     }
 
-    const kolkataData = await fetchAgencyData(kolkataAgencies);
-    const howrahData = await fetchAgencyData(howrahAgencies);
+    function computeRegionStats(rawData, agencyKeys) {
+      const totalInstalled = calcTotalInstalled(agencyKeys);
+      const everUsedPumps = new Set();
+      const stationPumpMap = {};
+
+      for (const d of rawData) {
+        for (const p of d.activePumps) {
+          everUsedPumps.add(`${d.station}-P${p}`);
+        }
+        const key = d.station;
+        if (!stationPumpMap[key]) stationPumpMap[key] = new Set();
+        d.activePumps.forEach(p => stationPumpMap[key].add(p));
+      }
+
+      const totalOperationPumps = everUsedPumps.size;
+
+      const statByStation = {};
+      for (const d of rawData) {
+        if (!statByStation[d.station]) statByStation[d.station] = { hours: 0, maxPumps: 0 };
+        statByStation[d.station].hours += d.hours;
+        statByStation[d.station].maxPumps = Math.max(statByStation[d.station].maxPumps, d.pumps);
+      }
+
+      const aggregate = aggregateByDate(rawData);
+      const cumulative = calculateCumulative(aggregate);
+      const totalHours = cumulative.reduce((s, d) => s + d.dailyHours, 0);
+      const avgPumps = aggregate.length
+        ? (aggregate.reduce((s, d) => s + d.workingPumps, 0) / aggregate.length).toFixed(1)
+        : 0;
+
+      return {
+        summary: {
+          totalInstalled,
+          totalInOperation: totalOperationPumps,
+          totalHours: totalHours.toFixed(1),
+          avgPumpsPerDay: avgPumps,
+          totalDays: aggregate.length
+        },
+        daily: cumulative,
+        stationStats: Object.entries(statByStation).map(([name, st]) => ({
+          name,
+          totalHours: st.hours.toFixed(1),
+          maxPumps: st.maxPumps
+        }))
+      };
+    }
 
     function aggregateByDate(data) {
       const map = new Map();
@@ -120,7 +191,6 @@ module.exports = async (req, res) => {
         existing.stations.add(d.station);
         map.set(d.date, existing);
       }
-      
       const sortedDates = Array.from(map.keys()).sort();
       return sortedDates.map(date => ({
         date,
@@ -144,34 +214,25 @@ module.exports = async (req, res) => {
       });
     }
 
-    const kolkataDaily = aggregateByDate(kolkataData);
-    const howrahDaily = aggregateByDate(howrahData);
+    const allRawData = await fetchAgencyData(allAgencies);
+    const kolkataRaw = allRawData.filter(d => kolkataAgencies.includes(d.agency));
+    const howrahRaw = allRawData.filter(d => howrahAgencies.includes(d.agency));
 
-    const kolkataCumulative = calculateCumulative(kolkataDaily);
-    const howrahCumulative = calculateCumulative(howrahDaily);
+    const kolkataStats = computeRegionStats(kolkataRaw, kolkataAgencies);
+    const howrahStats = computeRegionStats(howrahRaw, howrahAgencies);
 
-    const kolkataTotalHours = kolkataCumulative.reduce((sum, d) => sum + d.dailyHours, 0);
-    const howrahTotalHours = howrahCumulative.reduce((sum, d) => sum + d.dailyHours, 0);
-    const kolkataAvgPumps = kolkataDaily.length ? (kolkataDaily.reduce((sum, d) => sum + d.workingPumps, 0) / kolkataDaily.length).toFixed(1) : 0;
-    const howrahAvgPumps = howrahDaily.length ? (howrahDaily.reduce((sum, d) => sum + d.workingPumps, 0) / howrahDaily.length).toFixed(1) : 0;
+    const overallInstalled = kolkataStats.summary.totalInstalled + howrahStats.summary.totalInstalled;
+    const overallInOperation = kolkataStats.summary.totalInOperation + howrahStats.summary.totalInOperation;
+    const overallTotalHours = (parseFloat(kolkataStats.summary.totalHours) + parseFloat(howrahStats.summary.totalHours)).toFixed(1);
 
     res.json({
-      kolkata: {
-        summary: {
-          totalHours: kolkataTotalHours.toFixed(1),
-          avgPumpsPerDay: kolkataAvgPumps,
-          totalDays: kolkataDaily.length
-        },
-        daily: kolkataCumulative
+      overall: {
+        totalInstalled: overallInstalled,
+        totalInOperation: overallInOperation,
+        totalHours: overallTotalHours
       },
-      howrah: {
-        summary: {
-          totalHours: howrahTotalHours.toFixed(1),
-          avgPumpsPerDay: howrahAvgPumps,
-          totalDays: howrahDaily.length
-        },
-        daily: howrahCumulative
-      }
+      kolkata: kolkataStats,
+      howrah: howrahStats
     });
 
   } catch (e) {

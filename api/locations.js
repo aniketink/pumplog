@@ -16,11 +16,11 @@ module.exports = async (req, res) => {
 
     if (user.isAdmin) {
       const agencyKeys = Object.keys(AGENCIES).filter(k => k !== 'admin');
-      
+
       const promises = agencyKeys.map(async (agencyKey) => {
         const agency = AGENCIES[agencyKey];
         const allowedKeys = Object.keys(agency.sheets);
-        
+
         if (!agency.spreadsheetId || agency.spreadsheetId.includes('HERE')) {
           return allowedKeys.map(k => ({
             sheetName: `${agencyKey}:${k}`,
@@ -35,7 +35,7 @@ module.exports = async (req, res) => {
           const ranges = allowedKeys.map(k => `${k}!B${agency.sheets[k].start}:B${agency.sheets[k].end}`);
           const response = await sheetsAPI.spreadsheets.values.batchGet({ spreadsheetId: agency.spreadsheetId, ranges });
           const valueRanges = response.data.valueRanges || [];
-          
+
           return allowedKeys.map((key, i) => {
             const count = (valueRanges[i]?.values || []).filter(r => r && r[0] != null && r[0] !== '').length;
             return {
@@ -62,7 +62,7 @@ module.exports = async (req, res) => {
       list = results.flat();
     } else {
       const allowedKeys = Object.keys(user.sheets);
-      
+
       if (user.spreadsheetId.includes('HERE')) {
         list = allowedKeys.map(k => ({
           sheetName: k,
@@ -74,7 +74,7 @@ module.exports = async (req, res) => {
         const ranges = allowedKeys.map(k => `${k}!B${user.sheets[k].start}:B${user.sheets[k].end}`);
         const response = await sheetsAPI.spreadsheets.values.batchGet({ spreadsheetId: user.spreadsheetId, ranges });
         const valueRanges = response.data.valueRanges || [];
-        
+
         let i = 0;
         for (let key of allowedKeys) {
           const count = (valueRanges[i]?.values || []).filter(r => r && r[0] != null && r[0] !== '').length;
@@ -88,7 +88,7 @@ module.exports = async (req, res) => {
         }
       }
     }
-    
+
     res.json({ locations: list });
   } catch (e) {
     res.status(500).json({ error: e.message });

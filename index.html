@@ -1303,8 +1303,9 @@
         <div class="table-tabs">
           <button class="tab-btn active" data-tab="kolkata-table">Kolkata &amp; Adjoining</button>
           <button class="tab-btn" data-tab="howrah-table">Howrah</button>
+          <button class="tab-btn" data-tab="status-report-table">Status Report</button>
         </div>
-        <div class="table-wrapper">
+        <div class="table-wrapper" style="overflow-x: auto;">
           <table id="kolkata-table" class="data-table">
             <thead>
               <tr>
@@ -1328,6 +1329,23 @@
               </tr>
             </thead>
             <tbody id="howrah-table-body"></tbody>
+          </table>
+          <table id="status-report-table" class="data-table" style="display:none; font-size: 0.8rem; white-space: nowrap;">
+            <thead>
+              <tr>
+                <th>Sl. No.</th>
+                <th>Location (Cluster wise)</th>
+                <th>Sub Cluster wise locaton</th>
+                <th>District</th>
+                <th>Types of pump with Capacity</th>
+                <th>No. of Pumps Installed</th>
+                <th>UOM</th>
+                <th>Total Running Hours as on Reported Day</th>
+                <th>Upto date (Cummulative) running hours</th>
+                <th>Specific Remarks (if any)</th>
+              </tr>
+            </thead>
+            <tbody id="status-report-body"></tbody>
           </table>
         </div>
       </div>
@@ -1704,6 +1722,31 @@
           if (d.howrah) renderTable('howrah-table-body', d.howrah.daily, 'howrah');
         })
         .catch(function (e) { console.error('Dashboard load error:', e); });
+
+      fetch('/api/report', { headers: getAuthHeader() })
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          var tbody = document.getElementById('status-report-body');
+          tbody.innerHTML = '';
+          if (d.report) {
+            d.report.forEach(function(row) {
+              var tr = document.createElement('tr');
+              tr.innerHTML = 
+                '<td>' + esc(row.sl) + '</td>' +
+                '<td style="white-space: normal; min-width: 250px;">' + esc(row.loc) + '</td>' +
+                '<td style="white-space: pre-wrap; min-width: 200px;">' + esc(row.subLoc) + '</td>' +
+                '<td>' + esc(row.dist) + '</td>' +
+                '<td>' + esc(row.type) + '</td>' +
+                '<td>' + esc(row.pumps) + '</td>' +
+                '<td>' + esc(row.uom) + '</td>' +
+                '<td>' + esc(row.reportedDayHours) + '</td>' +
+                '<td>' + esc(row.cumulativeHours) + '</td>' +
+                '<td>' + esc(row.remarks) + '</td>';
+              tbody.appendChild(tr);
+            });
+          }
+        })
+        .catch(function (e) { console.error('Report load error:', e); });
     }
 
     function populateRegion(data, prefix, color, badgeColor) {

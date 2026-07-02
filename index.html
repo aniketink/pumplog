@@ -1381,10 +1381,16 @@
 
       <div class="table-section">
         <h3>Daily Breakdown</h3>
-        <div class="table-tabs">
-          <button class="tab-btn active" data-tab="kolkata-table">Kolkata &amp; Adjoining</button>
-          <button class="tab-btn" data-tab="howrah-table">Howrah</button>
-          <button class="tab-btn" data-tab="status-report-table">Status Report</button>
+        <div class="table-tabs" style="display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; gap: 10px;">
+            <button class="tab-btn active" data-tab="kolkata-table">Kolkata &amp; Adjoining</button>
+            <button class="tab-btn" data-tab="howrah-table">Howrah</button>
+            <button class="tab-btn" data-tab="status-report-table">Status Report</button>
+          </div>
+          <button id="download-pdf-btn" class="tab-btn" style="background: var(--maroon); color: #fff; border-color: var(--maroon); display: none; align-items: center; gap: 6px;" onclick="downloadStatusReportPDF()">
+            <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+            Download PDF
+          </button>
         </div>
         <div class="table-wrapper" style="overflow-x: auto;">
           <table id="kolkata-table" class="data-table">
@@ -1433,6 +1439,8 @@
     </div>
   </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script>
     var currentStation = '', currentPumpCount = 5, stations = [];
@@ -1979,15 +1987,51 @@
       });
     }
 
-    document.querySelectorAll('.tab-btn').forEach(function (btn) {
+    document.querySelectorAll('.tab-btn[data-tab]').forEach(function (btn) {
       btn.addEventListener('click', function () {
-        document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
+        document.querySelectorAll('.tab-btn[data-tab]').forEach(function (b) { b.classList.remove('active'); });
         this.classList.add('active');
         var tab = this.getAttribute('data-tab');
         document.querySelectorAll('.data-table').forEach(function (t) { t.style.display = 'none'; });
         document.getElementById(tab).style.display = 'table';
+
+        var pdfBtn = document.getElementById('download-pdf-btn');
+        if (pdfBtn) {
+          if (tab === 'status-report-table') {
+            pdfBtn.style.display = 'flex';
+          } else {
+            pdfBtn.style.display = 'none';
+          }
+        }
       });
     });
+
+    function downloadStatusReportPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF('landscape');
+      
+      doc.setFontSize(14);
+      doc.text("STATUS REPORT OF TEMPORARY PUMPS", 14, 15);
+      
+      const targetDate = new Date().toISOString().split('T')[0];
+      doc.setFontSize(10);
+      doc.text("DATE: " + targetDate, 14, 22);
+
+      doc.autoTable({
+        html: '#status-report-table',
+        startY: 28,
+        theme: 'grid',
+        styles: { fontSize: 8, cellPadding: 2, overflow: 'linebreak' },
+        headStyles: { fillColor: [11, 61, 110], textColor: 255 }, // var(--navy)
+        columnStyles: {
+          1: { cellWidth: 40 },
+          2: { cellWidth: 45 },
+          4: { cellWidth: 40 }
+        }
+      });
+      
+      doc.save('Status_Report_' + targetDate + '.pdf');
+    }
   </script>
 </body>
 

@@ -424,6 +424,22 @@
       box-shadow: inset 4px 0 0 0 var(--plum);
     }
 
+    #pump-inputs .pump-box:nth-child(6) {
+      box-shadow: inset 4px 0 0 0 #1a7a5c;
+    }
+
+    #pump-inputs .pump-box:nth-child(7) {
+      box-shadow: inset 4px 0 0 0 #8a4f1f;
+    }
+
+    #pump-inputs .pump-box:nth-child(8) {
+      box-shadow: inset 4px 0 0 0 #4a6a8a;
+    }
+
+    #pump-inputs .pump-box:nth-child(9) {
+      box-shadow: inset 4px 0 0 0 #6a3a6a;
+    }
+
     #pump-inputs .pump-box:nth-child(1) .pump-badge {
       background: var(--navy);
     }
@@ -442,6 +458,22 @@
 
     #pump-inputs .pump-box:nth-child(5) .pump-badge {
       background: var(--plum);
+    }
+
+    #pump-inputs .pump-box:nth-child(6) .pump-badge {
+      background: #1a7a5c;
+    }
+
+    #pump-inputs .pump-box:nth-child(7) .pump-badge {
+      background: #8a4f1f;
+    }
+
+    #pump-inputs .pump-box:nth-child(8) .pump-badge {
+      background: #4a6a8a;
+    }
+
+    #pump-inputs .pump-box:nth-child(9) .pump-badge {
+      background: #6a3a6a;
     }
 
     .pump-label {
@@ -694,6 +726,22 @@
       box-shadow: inset 3px 0 0 0 var(--plum);
     }
 
+    .log-pumps-grid .log-pump-cell:nth-child(6) {
+      box-shadow: inset 3px 0 0 0 #1a7a5c;
+    }
+
+    .log-pumps-grid .log-pump-cell:nth-child(7) {
+      box-shadow: inset 3px 0 0 0 #8a4f1f;
+    }
+
+    .log-pumps-grid .log-pump-cell:nth-child(8) {
+      box-shadow: inset 3px 0 0 0 #4a6a8a;
+    }
+
+    .log-pumps-grid .log-pump-cell:nth-child(9) {
+      box-shadow: inset 3px 0 0 0 #6a3a6a;
+    }
+
     .log-pumps-grid .log-pump-cell:nth-child(1) .lp-label {
       color: var(--navy);
     }
@@ -712,6 +760,22 @@
 
     .log-pumps-grid .log-pump-cell:nth-child(5) .lp-label {
       color: var(--plum);
+    }
+
+    .log-pumps-grid .log-pump-cell:nth-child(6) .lp-label {
+      color: #1a7a5c;
+    }
+
+    .log-pumps-grid .log-pump-cell:nth-child(7) .lp-label {
+      color: #8a4f1f;
+    }
+
+    .log-pumps-grid .log-pump-cell:nth-child(8) .lp-label {
+      color: #4a6a8a;
+    }
+
+    .log-pumps-grid .log-pump-cell:nth-child(9) .lp-label {
+      color: #6a3a6a;
     }
 
     .lp-label {
@@ -1272,7 +1336,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script>
-    var currentStation = '', stations = [];
+    var currentStation = '', currentPumpCount = 5, stations = [];
     var kolkataChartHours = null, kolkataChartPumps = null, howrahChartHours = null, howrahChartPumps = null;
 
     function esc(s) { return s === undefined || s === null ? '' : String(s); }
@@ -1441,17 +1505,18 @@
         row.appendChild(mainEl);
         row.appendChild(metaEl);
 
-        row.addEventListener('click', function () { openStation(s.sheetName, s.displayName); });
+        row.addEventListener('click', function () { openStation(s.sheetName, s.displayName, s.pumps || 5); });
         row.addEventListener('keydown', function (e) {
-          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openStation(s.sheetName, s.displayName); }
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openStation(s.sheetName, s.displayName, s.pumps || 5); }
         });
 
         container.appendChild(row);
       });
     }
 
-    function openStation(id, name) {
+    function openStation(id, name, pumpCount) {
       currentStation = id;
+      currentPumpCount = pumpCount || 5;
       var titleText = name;
       if (id && id.indexOf(':') !== -1) {
         var agency = id.split(':')[0].toUpperCase();
@@ -1464,7 +1529,7 @@
 
       var wrap = document.getElementById('pump-inputs');
       wrap.innerHTML = '';
-      for (var i = 1; i <= 5; i++) {
+      for (var i = 1; i <= currentPumpCount; i++) {
         var box = document.createElement('div');
         box.className = 'pump-box';
         box.innerHTML =
@@ -1483,7 +1548,7 @@
     }
 
     function clearForm() {
-      for (var i = 1; i <= 5; i++) {
+      for (var i = 1; i <= currentPumpCount; i++) {
         document.getElementById('p' + i + '-start').value = '';
         document.getElementById('p' + i + '-stop').value = '';
       }
@@ -1519,7 +1584,7 @@
         var name = document.getElementById('f-name').value;
         if (!date) { setStatus('Date required', 'var(--danger)'); return; }
         var pumps = {}, hasData = false;
-        for (var i = 1; i <= 5; i++) {
+        for (var i = 1; i <= currentPumpCount; i++) {
           var a = document.getElementById('p' + i + '-start').value;
           var b = document.getElementById('p' + i + '-stop').value;
           if (a || b) { hasData = true; pumps[i] = { start: a, stop: b }; }
@@ -1567,7 +1632,7 @@
 
               var grid = document.createElement('div');
               grid.className = 'log-pumps-grid';
-              for (var p = 1; p <= 5; p++) {
+              for (var p = 1; p <= currentPumpCount; p++) {
                 var pm = row.pumps[p];
                 var cell = document.createElement('div');
                 cell.className = 'log-pump-cell';
@@ -1592,11 +1657,11 @@
           var cd = document.getElementById('f-date').value;
           var td = d.entries && d.entries.find(function (e) { return e.date === cd; });
           var empty = true;
-          for (var i = 1; i <= 5; i++) {
+          for (var i = 1; i <= currentPumpCount; i++) {
             if (document.getElementById('p' + i + '-start').value || document.getElementById('p' + i + '-stop').value) { empty = false; break; }
           }
           if (td && empty) {
-            for (var i = 1; i <= 5; i++) {
+            for (var i = 1; i <= currentPumpCount; i++) {
               var pp = td.pumps[i];
               if (pp) {
                 if (pp.start) document.getElementById('p' + i + '-start').value = pp.start;

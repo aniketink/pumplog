@@ -28,14 +28,21 @@ const GD_ENTERPRISE_COLS = {
   6: { start: 17, stop: 18, hours: 19 },
   7: { start: 20, stop: 21, hours: 22 },
   8: { start: 23, stop: 24, hours: 25 },
+  9: { start: 26, stop: 27, hours: 28 },
 };
 
-const AGENCY_PUMP_CONFIG = {
-  sas: { pumpsPerStation: 5 },
-  geebee: { pumpsPerStation: 5 },
-  tecnico: { pumpsPerStation: 5 },
-  gdenterprise: { pumpsPerStation: 8 },
-};
+function getPumpCount(agencyKey, sheetConfig) {
+  if (agencyKey === 'gdenterprise') {
+    return sheetConfig.pumps || 9;
+  }
+  return 5;
+}
+
+function getRangeEndCol(pumpCount) {
+  const lastHoursIdx = 4 + (pumpCount - 1) * 3;
+  if (lastHoursIdx < 26) return String.fromCharCode(65 + lastHoursIdx);
+  return String.fromCharCode(64 + Math.floor(lastHoursIdx / 26)) + String.fromCharCode(65 + (lastHoursIdx % 26));
+}
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -57,8 +64,9 @@ module.exports = async (req, res) => {
       for (const key of agencyKeys) {
         const agency = AGENCIES[key];
         if (!agency) continue;
-        const ppc = AGENCY_PUMP_CONFIG[key].pumpsPerStation;
-        total += Object.keys(agency.sheets).length * ppc;
+        for (const sheetKey of Object.keys(agency.sheets)) {
+          total += getPumpCount(key, agency.sheets[sheetKey]);
+        }
       }
       return total;
     }
@@ -74,16 +82,17 @@ module.exports = async (req, res) => {
         for (const sheetKey of sheetKeys) {
           const config = agency.sheets[sheetKey];
           try {
+            const pumpCount = getPumpCount(agencyKey, config);
+            const rangeEnd = getRangeEndCol(pumpCount);
             const response = await sheetsAPI.spreadsheets.values.get({
               spreadsheetId: agency.spreadsheetId,
-              range: `${sheetKey}!A${config.start}:Z${config.end}`,
+              range: `${sheetKey}!A${config.start}:${rangeEnd}${config.end}`,
               valueRenderOption: 'UNFORMATTED_VALUE',
               dateTimeRenderOption: 'SERIAL_NUMBER'
             });
             
             const rows = response.data.values || [];
             const isGdEnterprise = agencyKey === 'gdenterprise';
-            const pumpCount = isGdEnterprise ? 8 : 5;
             const colMap = isGdEnterprise ? GD_ENTERPRISE_COLS : COLS_INDEX;
             
             for (const r of rows) {

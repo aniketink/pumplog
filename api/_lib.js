@@ -48,9 +48,9 @@ const AGENCIES = {
     pass: 'gdenterprise123',
     spreadsheetId: '1ltkbkoVHaAg7vOUnWj5y7RS1r9k4J4UOyePgPuK3ANs',
     sheets: {
-      'Piyadapara': { name: 'Piyadapara', start: 13, end: 118 },
-      'Fakir para': { name: 'Fakir para', start: 13, end: 118 },
-      'Sardarparajola': { name: 'Sardarparajola', start: 13, end: 118 },
+      'Piyadapara': { name: 'Piyadapara', start: 13, end: 118, pumps: 9 },
+      'Fakir para': { name: 'Fakir para', start: 13, end: 118, pumps: 8 },
+      'Sardarparajola': { name: 'Sardarparajola', start: 13, end: 118, pumps: 7 },
     }
   },
   'admin': {
@@ -73,6 +73,30 @@ const COLS_LETTERS = {
   3: { start: 'I', stop: 'J' },
   4: { start: 'L', stop: 'M' },
   5: { start: 'O', stop: 'P' },
+};
+
+const GD_COLS_INDEX = {
+  1: { start: 2,  stop: 3,  hours: 4  },
+  2: { start: 5,  stop: 6,  hours: 7  },
+  3: { start: 8,  stop: 9,  hours: 10 },
+  4: { start: 11, stop: 12, hours: 13 },
+  5: { start: 14, stop: 15, hours: 16 },
+  6: { start: 17, stop: 18, hours: 19 },
+  7: { start: 20, stop: 21, hours: 22 },
+  8: { start: 23, stop: 24, hours: 25 },
+  9: { start: 26, stop: 27, hours: 28 },
+};
+
+const GD_COLS_LETTERS = {
+  1: { start: 'C',  stop: 'D'  },
+  2: { start: 'F',  stop: 'G'  },
+  3: { start: 'I',  stop: 'J'  },
+  4: { start: 'L',  stop: 'M'  },
+  5: { start: 'O',  stop: 'P'  },
+  6: { start: 'R',  stop: 'S'  },
+  7: { start: 'U',  stop: 'V'  },
+  8: { start: 'X',  stop: 'Y'  },
+  9: { start: 'AA', stop: 'AB' },
 };
 
 function jsDateToSerial(dateString) {
@@ -100,10 +124,24 @@ function authenticate(req) {
     const [user, pass] = Buffer.from(match[1], 'base64').toString('utf8').split(':');
     const agency = AGENCIES[user];
     if (agency && agency.pass === pass) {
-      return { username: user, spreadsheetId: agency.spreadsheetId, sheets: agency.sheets, isAdmin: !!agency.isAdmin };
+      return { username: user, agencyKey: user, spreadsheetId: agency.spreadsheetId, sheets: agency.sheets, isAdmin: !!agency.isAdmin };
     }
   } catch(e) {}
   return null;
 }
 
-module.exports = { getAuth, AGENCIES, COLS_INDEX, COLS_LETTERS, jsDateToSerial, serialToDateStr, fractionToTimeStr, authenticate };
+function getOperatorColIndex(pumpCount) {
+  return 3 + pumpCount * 3;
+}
+
+function getOperatorColLetter(pumpCount) {
+  const idx = getOperatorColIndex(pumpCount);
+  if (idx < 26) return String.fromCharCode(65 + idx);
+  return String.fromCharCode(64 + Math.floor(idx / 26)) + String.fromCharCode(65 + (idx % 26));
+}
+
+function getRangeEnd(pumpCount) {
+  return getOperatorColLetter(pumpCount);
+}
+
+module.exports = { getAuth, AGENCIES, COLS_INDEX, COLS_LETTERS, GD_COLS_INDEX, GD_COLS_LETTERS, jsDateToSerial, serialToDateStr, fractionToTimeStr, authenticate, getOperatorColIndex, getOperatorColLetter, getRangeEnd };

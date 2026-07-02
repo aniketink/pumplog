@@ -1,5 +1,5 @@
 const { google } = require('googleapis');
-const { getAuth, COLS_LETTERS, jsDateToSerial, authenticate } = require('./_lib');
+const { getAuth, COLS_LETTERS, GD_COLS_LETTERS, jsDateToSerial, authenticate, getRangeEnd } = require('./_lib');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -37,11 +37,17 @@ module.exports = async (req, res) => {
     if (!config) return res.status(403).json({ error: 'Forbidden' });
     if (!targetSpreadsheetId || targetSpreadsheetId.includes('HERE')) return res.status(400).json({ error: 'Spreadsheet ID missing for this agency. Please configure it in the backend.' });
 
+    const isGdEnterprise = user.agencyKey === 'gdenterprise' || (user.isAdmin && sheetName.startsWith('gdenterprise:'));
+    const pumpCount = (config.pumps || (isGdEnterprise ? 8 : 5));
+    const colsLetters = isGdEnterprise ? GD_COLS_LETTERS : COLS_LETTERS;
+    const rangeEnd = getRangeEnd(pumpCount);
+    const operatorCol = getRangeEnd(pumpCount);
+
     const sheetsAPI = google.sheets({ version: 'v4', auth: getAuth() });
 
     const getRes = await sheetsAPI.spreadsheets.values.get({
       spreadsheetId: targetSpreadsheetId,
-      range: `${actualSheetName}!A${config.start}:S${config.end}`,
+      range: `${actualSheetName}!A${config.start}:${rangeEnd}${config.end}`,
       valueRenderOption: 'UNFORMATTED_VALUE',
       dateTimeRenderOption: 'SERIAL_NUMBER'
     });
@@ -66,15 +72,15 @@ module.exports = async (req, res) => {
       { range: `${actualSheetName}!A${rowNum}`, values: [[rowNum - config.start + 1]] },
       { range: `${actualSheetName}!B${rowNum}`, values: [[date]] },
     ];
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 1; i <= pumpCount; i++) {
       const p = pumps[i] || pumps[String(i)];
       if (p) {
-        const cols = COLS_LETTERS[i];
+        const cols = colsLetters[i];
         if (p.start !== undefined) data.push({ range: `${actualSheetName}!${cols.start}${rowNum}`, values: [[p.start]] });
         if (p.stop !== undefined) data.push({ range: `${actualSheetName}!${cols.stop}${rowNum}`, values: [[p.stop]] });
       }
     }
-    if (operatorName !== undefined) data.push({ range: `${actualSheetName}!S${rowNum}`, values: [[operatorName]] });
+    if (operatorName !== undefined) data.push({ range: `${actualSheetName}!${operatorCol}${rowNum}`, values: [[operatorName]] });
 
     await sheetsAPI.spreadsheets.values.batchUpdate({
       spreadsheetId: targetSpreadsheetId,

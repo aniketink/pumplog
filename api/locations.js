@@ -1,5 +1,5 @@
 const { google } = require('googleapis');
-const { getAuth, authenticate } = require('./_lib');
+const { getAuth, authenticate, AGENCIES } = require('./_lib');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -27,6 +27,7 @@ module.exports = async (req, res) => {
             displayName: agency.sheets[k].name,
             entriesCount: 0,
             maxEntries: agency.sheets[k].end - agency.sheets[k].start + 1,
+            pumps: agency.sheets[k].pumps || 5,
             agency: agencyKey
           }));
         }
@@ -43,6 +44,7 @@ module.exports = async (req, res) => {
               displayName: agency.sheets[key].name,
               entriesCount: count,
               maxEntries: agency.sheets[key].end - agency.sheets[key].start + 1,
+              pumps: agency.sheets[key].pumps || 5,
               agency: agencyKey
             };
           });
@@ -53,6 +55,7 @@ module.exports = async (req, res) => {
             displayName: `${agency.sheets[k].name} [Error]`,
             entriesCount: 0,
             maxEntries: agency.sheets[k].end - agency.sheets[k].start + 1,
+            pumps: agency.sheets[k].pumps || 5,
             agency: agencyKey
           }));
         }
@@ -68,7 +71,8 @@ module.exports = async (req, res) => {
           sheetName: k,
           displayName: user.sheets[k].name,
           entriesCount: 0,
-          maxEntries: user.sheets[k].end - user.sheets[k].start + 1
+          maxEntries: user.sheets[k].end - user.sheets[k].start + 1,
+          pumps: user.sheets[k].pumps || 5
         }));
       } else {
         const ranges = allowedKeys.map(k => `${k}!B${user.sheets[k].start}:B${user.sheets[k].end}`);
@@ -82,7 +86,8 @@ module.exports = async (req, res) => {
             sheetName: key,
             displayName: user.sheets[key].name,
             entriesCount: count,
-            maxEntries: user.sheets[key].end - user.sheets[key].start + 1
+            maxEntries: user.sheets[key].end - user.sheets[key].start + 1,
+            pumps: user.sheets[key].pumps || 5
           });
           i++;
         }

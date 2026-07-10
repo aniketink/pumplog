@@ -78,14 +78,22 @@ const COLS_INDEX = {
   3: { start: 8,  stop: 9  },
   4: { start: 11, stop: 12 },
   5: { start: 14, stop: 15 },
+  6: { start: 17, stop: 18 },
+  7: { start: 20, stop: 21 },
+  8: { start: 23, stop: 24 },
+  9: { start: 26, stop: 27 },
 };
 
 const COLS_LETTERS = {
-  1: { start: 'C', stop: 'D' },
-  2: { start: 'F', stop: 'G' },
-  3: { start: 'I', stop: 'J' },
-  4: { start: 'L', stop: 'M' },
-  5: { start: 'O', stop: 'P' },
+  1: { start: 'C',  stop: 'D'  },
+  2: { start: 'F',  stop: 'G'  },
+  3: { start: 'I',  stop: 'J'  },
+  4: { start: 'L',  stop: 'M'  },
+  5: { start: 'O',  stop: 'P'  },
+  6: { start: 'R',  stop: 'S'  },
+  7: { start: 'U',  stop: 'V'  },
+  8: { start: 'X',  stop: 'Y'  },
+  9: { start: 'AA', stop: 'AB' },
 };
 
 const GD_COLS_INDEX = {

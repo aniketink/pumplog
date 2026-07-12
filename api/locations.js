@@ -76,20 +76,31 @@ module.exports = async (req, res) => {
         }));
       } else {
         const ranges = allowedKeys.map(k => `${k}!B${user.sheets[k].start}:B${user.sheets[k].end}`);
-        const response = await sheetsAPI.spreadsheets.values.batchGet({ spreadsheetId: user.spreadsheetId, ranges });
-        const valueRanges = response.data.valueRanges || [];
+        try {
+          const response = await sheetsAPI.spreadsheets.values.batchGet({ spreadsheetId: user.spreadsheetId, ranges });
+          const valueRanges = response.data.valueRanges || [];
 
-        let i = 0;
-        for (let key of allowedKeys) {
-          const count = (valueRanges[i]?.values || []).filter(r => r && r[0] != null && r[0] !== '').length;
-          list.push({
-            sheetName: key,
-            displayName: user.sheets[key].name,
-            entriesCount: count,
-            maxEntries: user.sheets[key].end - user.sheets[key].start + 1,
-            pumps: user.sheets[key].pumps || 5
-          });
-          i++;
+          let i = 0;
+          for (let key of allowedKeys) {
+            const count = (valueRanges[i]?.values || []).filter(r => r && r[0] != null && r[0] !== '').length;
+            list.push({
+              sheetName: key,
+              displayName: user.sheets[key].name,
+              entriesCount: count,
+              maxEntries: user.sheets[key].end - user.sheets[key].start + 1,
+              pumps: user.sheets[key].pumps || 5
+            });
+            i++;
+          }
+        } catch (err) {
+          console.error(`Error loading sheets for user:`, err.message);
+          list = allowedKeys.map(k => ({
+            sheetName: k,
+            displayName: `${user.sheets[k].name} [Error]`,
+            entriesCount: 0,
+            maxEntries: user.sheets[k].end - user.sheets[k].start + 1,
+            pumps: user.sheets[k].pumps || 5
+          }));
         }
       }
     }
